@@ -49,6 +49,24 @@ function handleStarResult(resultData) {
             + resultData[i]["movie_title"] +     // display star_name for the link text
             '</a>' +
             "</th>";
+        rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
+        rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
+        rowHTML += "<th>" + resultData[i]["genreList"] + "</th>";
+        
+        //For stars list
+        let stars_name = resultData[i]["stars_name"].split(",");
+        let stars_id = resultData[i]["stars_id"].split(",");
+        rowHTML += "<th>";
+        for (let j=0; j<stars_name.length-1; j++){
+        	rowHTML+=('<a href="single-star.html?id=' + stars_id[j] + '">'
+                    + stars_name[j] +     // display movie_name for the link text
+                    '</a>'
+        	);
+        	rowHTML+= ",";
+        }
+        rowHTML = rowHTML.substring(0, rowHTML.length-1);
+        rowHTML += "</th>";
+        
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
         rowHTML += "</tr>";
 
