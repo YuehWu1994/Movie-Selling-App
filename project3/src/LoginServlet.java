@@ -43,17 +43,21 @@ public class LoginServlet extends HttpServlet {
          */ 
         
         int loginStatus = 2; // 0: correct, 1: username not match, 2: password not match
+
+        PreparedStatement userNameStr = null;
+        String selectString = "SELECT c.password FROM `customers` c WHERE c.email = ?";
+        
+        		
         
         try {
         	Connection dbcon = dataSource.getConnection();
-            // Declare our statement
-            Statement statement = dbcon.createStatement();
-            
-            // Query database to get top 20 movies list.
-            String query = "SELECT c.password FROM `customers` c WHERE c.email =" + "'"+ username+"'";
-            
-            // Perform the query
-            ResultSet rs = statement.executeQuery(query);
+        	dbcon.setAutoCommit(false);
+        	userNameStr = dbcon.prepareStatement(selectString);
+        	userNameStr.setString(1, username);
+
+            ResultSet rs = userNameStr.executeQuery();
+            dbcon.commit();
+        	
             JsonArray jsonArray = new JsonArray();
             
             if(!rs.next()) {
@@ -113,7 +117,7 @@ public class LoginServlet extends HttpServlet {
             //response.setStatus(200);
 
             rs.close();
-            statement.close();
+            userNameStr.close();
             dbcon.close();
         } catch (Exception e) {
         	

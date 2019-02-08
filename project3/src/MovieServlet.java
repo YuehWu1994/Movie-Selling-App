@@ -47,72 +47,115 @@ public class MovieServlet extends HttpServlet {
         int page = Integer.parseInt(request.getParameter("p"));  
         int numRecord_int = Integer.parseInt(request.getParameter("numRecord"));
         
-        String offset = Integer.toString(page*numRecord_int);
-        String numRecord = Integer.toString(numRecord_int);
-
+        int offset = page*numRecord_int;
+        int numRecord = numRecord_int;
+        
+        // prepared string
+       	PreparedStatement searchStatement = null;
+       	PreparedStatement sizeStatement = null;
+        String baseSelect = "SELECT * FROM `movies` m JOIN `ratings` r ON m.id = r.movieId";
+        String searchStr = "";
+        
+        // Get movies and rating.
+        //query="SELECT * FROM `movies` m JOIN `ratings` r ON m.id = r.movieId";
+        
+        //Search by genre.
+        if(genre.length() > 1) {
+        	searchStr="SELECT q.id, q.title, q.year, q.director, q.rating FROM ("+ baseSelect +") q JOIN `genres_in_movies` gim ON gim.movieId=q.id JOIN `genres` g ON g.id=gim.genreId WHERE g.name=?";
+        }
+        //Search by firt character.
+        else if(genre.length() == 1) {
+        	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.title like ?";
+        	// searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.title like ?" + "%";
+        }
+        //Advanced search.
+        else {
+            if(Title != "") {
+            	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.title like ?";
+            }
+            else if(Year != "") {
+            	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.year like ?";
+            }
+            else if(Director != "") {
+            	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.director like ?";
+            }
+            
+            else if(Star_name != "") {
+            	searchStr= "SELECT q.id, q.title, q.year, q.director, q.rating FROM ("+baseSelect+") q JOIN `stars_in_movies` sim ON q.id=sim.movieId JOIN `stars` s ON s.id=sim.starId WHERE s.name like ?";
+            }
+        }
+        
+        //Count the number of movies.
+        String qSize="SELECT COUNT(*) AS `cnt` FROM "+"("+ searchStr +") AS n";
+        
+        if(sort.equals("title_up")) {
+        	searchStr="SELECT * FROM "+"("+searchStr+") AS n ORDER BY n.title DESC";
+        }
+        else if(sort.equals("title_down")) {
+        	searchStr="SELECT * FROM "+"("+searchStr+") AS n ORDER BY n.title ASC";
+        }
+        else if(sort.equals("rating_up")) {
+        	searchStr="SELECT * FROM "+"("+searchStr+") AS n ORDER BY n.rating DESC";
+        }
+        else if(sort.equals("rating_down")) {
+        	searchStr="SELECT * FROM "+"("+searchStr+") AS n ORDER BY n.rating ASC";
+        }
+        
+        searchStr="SELECT * FROM "+"("+searchStr+") AS n LIMIT ? OFFSET ?";        
+//        System.out.println(searchStr);
+//        System.out.println(qSize);
         try {
             // Get a connection from dataSource
             Connection dbcon = dataSource.getConnection();
-
-            // Declare our statement
-            Statement statement = dbcon.createStatement();
-                                                                
-            String query="";
-            String qSize="0";
-                        
-            // Get movies and rating.
-            query="SELECT * FROM `movies` m JOIN `ratings` r ON m.id = r.movieId";
             
+            dbcon.setAutoCommit(false);
+            searchStatement = dbcon.prepareStatement(searchStr);            
+            sizeStatement = dbcon.prepareStatement(qSize);
+            
+            // Prepare the statement
             //Search by genre.
             if(genre.length() > 1) {
-            	query="SELECT q.id, q.title, q.year, q.director, q.rating FROM ("+query+") q JOIN `genres_in_movies` gim ON gim.movieId=q.id JOIN `genres` g ON g.id=gim.genreId WHERE g.name="+"'"+genre+"'";
+            	searchStatement.setString(1, genre);
+            	sizeStatement.setString(1, genre);
             }
             //Search by firt character.
             else if(genre.length() == 1) {
-            	query="SELECT * FROM ("+query+") q WHERE q.title like '"+genre.charAt(0)+"%'";
+            	searchStatement.setString(1, Character.toString(genre.charAt(0)) + "%");
+            	sizeStatement.setString(1, Character.toString(genre.charAt(0)) + "%");
             }
             //Advanced search.
             else {
                 if(Title != "") {
-                	query="SELECT * FROM ("+query+") q WHERE q.title like '%"+Title+"%'";
+                	searchStatement.setString(1, "%" + Title + "%");
+                	sizeStatement.setString(1, "%" + Title + "%");
                 }
                 else if(Year != "") {
-                	query="SELECT * FROM ("+query+") q WHERE q.year like '%"+Year+"%'";
+                	searchStatement.setString(1, "%" + Year + "%");
+                	sizeStatement.setString(1, "%" + Year + "%");
                 }
                 else if(Director != "") {
-                	query="SELECT * FROM ("+query+") q WHERE q.director like '%"+Director+"%'";
+                	searchStatement.setString(1, "%" + Director + "%");
+                	sizeStatement.setString(1, "%" + Director + "%");
                 }
-                
                 else if(Star_name != "") {
-                	query="SELECT q.id, q.title, q.year, q.director, q.rating FROM ("+query+") q JOIN `stars_in_movies` sim ON q.id=sim.movieId JOIN `stars` s ON s.id=sim.starId WHERE s.name like "+"'%"+Star_name+"%'";
+                	searchStatement.setString(1, "%" + Star_name + "%");
+                	sizeStatement.setString(1, "%" + Star_name + "%");
                 }
             }
             
-            //Count the number of movies.
-            qSize="SELECT COUNT(*) AS `cnt` FROM "+"("+ query +") AS n";
+            // set limit and offset
+            searchStatement.setInt(2, numRecord);
+            searchStatement.setInt(3, offset);
+           
             
-            if(sort.equals("title_up")) {
-            	query="SELECT * FROM "+"("+query+") AS n ORDER BY n.title DESC";
-            }
-            else if(sort.equals("title_down")) {
-            	query="SELECT * FROM "+"("+query+") AS n ORDER BY n.title ASC";
-            }
-            else if(sort.equals("rating_up")) {
-            	query="SELECT * FROM "+"("+query+") AS n ORDER BY n.rating DESC";
-            }
-            else if(sort.equals("rating_down")) {
-            	query="SELECT * FROM "+"("+query+") AS n ORDER BY n.rating ASC";
-            }
-            
-            query="SELECT * FROM "+"("+query+") AS n LIMIT "+numRecord+" OFFSET "+offset;
-
-
             // Count total number of movies.
-            ResultSet rsP = statement.executeQuery(qSize);
+            ResultSet rsP = sizeStatement.executeQuery();
+            dbcon.commit();
     		while (rsP.next()) {
     			movieSize = rsP.getString("cnt");
     		}
     		rsP.close();
+    		sizeStatement.close();
      
         	JsonArray jsonArray = new JsonArray();
         	JsonObject jsonObjSz = new JsonObject();
@@ -120,13 +163,19 @@ public class MovieServlet extends HttpServlet {
             jsonArray.add(jsonObjSz);
             
             // Perform the query
-            ResultSet rs = statement.executeQuery(query);
+            ResultSet rs = searchStatement.executeQuery();
+            dbcon.commit();
+            
+            // prepare string
+            PreparedStatement genreStatement = null;
+            String genStr = "SELECT GROUP_CONCAT(g.name) AS genreList FROM  `genres` g JOIN `genres_in_movies` gm ON gm.genreId = g.id AND gm.movieId =?";
+            PreparedStatement starStatement = null;
+            String starStr = "SELECT * from movies as m, ratings as r, stars_in_movies as sim, stars as s where s.id = sim.starId and m.id = sim.movieId and r.movieId = m.id and m.id =?";
             
             // Iterate through each row of rs
             while (rs.next()) {         	
             	String movie_id = rs.getString("id");
             	String movie_title = rs.getString("title");
-
             	String movie_year = rs.getString("year");
             	String movie_director = rs.getString("director");
             	String genreList = "";
@@ -135,21 +184,22 @@ public class MovieServlet extends HttpServlet {
             	String movie_rating = rs.getString("rating");
             	
             	//Query list of genres.
-            	String query_log = "SELECT GROUP_CONCAT(g.name) AS genreList FROM  `genres` g JOIN `genres_in_movies` gm ON gm.genreId = g.id AND gm.movieId ="+"'"+movie_id+"'";
-            	Statement statement_log = dbcon.createStatement();
-            	ResultSet rs_log = statement_log.executeQuery(query_log);
+            	genreStatement = dbcon.prepareStatement(genStr);
+            	genreStatement.setString(1, movie_id);
+                ResultSet rs_log = genreStatement.executeQuery();
             	rs_log.next();
-   
-            	genreList=rs_log.getString("genreList");
-            	
+    	
             	//Query list of stars.    	
-            	String query_los = "SELECT * from movies as m, ratings as r, stars_in_movies as sim, stars as s where s.id = sim.starId and m.id = sim.movieId and r.movieId = m.id and m.id = "+"'"+movie_id+"'";
-            	Statement statement_los = dbcon.createStatement();
-            	ResultSet rs_los = statement_los.executeQuery(query_los);
+            	starStatement = dbcon.prepareStatement(starStr);
+            	starStatement.setString(1, movie_id);
+            	
+            	ResultSet rs_los = starStatement.executeQuery();
             	while (rs_los.next()) {
             		stars_name+=(rs_los.getString("name")+",");
             		stars_id+=(rs_los.getString("starId")+",");
             	}
+            	
+            	genreList=rs_log.getString("genreList");
             	
             	JsonObject jsonObject = new JsonObject();
             	jsonObject.addProperty("movie_id", movie_id);
@@ -172,7 +222,7 @@ public class MovieServlet extends HttpServlet {
             response.setStatus(200);
             
             rs.close();
-            statement.close();
+            searchStatement.close();
             dbcon.close();
         } catch (Exception e) {
         	

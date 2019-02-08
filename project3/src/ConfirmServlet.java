@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import com.google.gson.JsonArray;
@@ -49,24 +50,27 @@ public class ConfirmServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
 		
+		PreparedStatement userStatement = null;
+		
 		try {
 			Connection dbcon = dataSource.getConnection();
+			dbcon.setAutoCommit(false);
 			Statement statement = dbcon.createStatement();
 			HttpSession session = request.getSession();
 			
 	        // Get user name.
 	        User user = (User) session.getAttribute("user");
-	        // System.out.println(user.getUsername());
 	        
-	        //SELECT * FROM customers c, sales s WHERE c.id=s.id AND c.email= 'a@email.com';
-	        
-			//String query="SELECT * FROM customers c, sales s WHERE c.id=s.id AND c.email='"+user.getUsername()+"'";
-	        //Get customer id.
-			String query="SELECT * FROM customers c WHERE c.email='"+user.getUsername()+"'";
-			ResultSet rs=statement.executeQuery(query);
+	        // find customer id
+	        String query="SELECT * FROM customers c WHERE c.email=?";
+	        userStatement = dbcon.prepareStatement(query);
+	        userStatement.setString(1, user.getUsername());
+			
+	        ResultSet rs=userStatement.executeQuery();
+	        dbcon.commit();
 	        rs.next();
 	        String customerId=rs.getString("id");
-			
+
 	        //Get today's date.
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date date = new Date();
@@ -78,40 +82,37 @@ public class ConfirmServlet extends HttpServlet {
 	        HashMap<String, Integer> itemMap=(HashMap<String, Integer>) session.getAttribute("itemMap");
 	        for(String movie_title : itemMap.keySet()) {
 	        	Integer quantity=itemMap.get(movie_title);
-	        	//SELECT * FROM movies WHERE movies.title='Chief Zabu';
-	        	query="SELECT * FROM movies WHERE movies.title='"+movie_title+"'";
-	        	rs=statement.executeQuery(query);
+
+	        	// find movie id
+	        	query="SELECT * FROM movies WHERE movies.title=?";
+	        	userStatement = dbcon.prepareStatement(query);
+		        userStatement.setString(1, movie_title);
+		        rs=userStatement.executeQuery();
+		        dbcon.commit();
+	        	
 	        	rs.next();
 	        	String movie_id=rs.getString("id");
 	        	
-	        	System.out.println("movie_id: "+movie_id);
-	        	System.out.println("quantity: "+quantity);
+		        //Insert sale record into database
+	        	query="INSERT INTO sales (customerId, movieId, saleDate, quantity) VALUES (?,?,?,?)";
+	        	userStatement = dbcon.prepareStatement(query);
+		        userStatement.setString(1, customerId);
+		        userStatement.setString(2, movie_id);
+		        userStatement.setString(3, saleDate);
+		        userStatement.setInt(4, quantity);
+		        int r=userStatement.executeUpdate();
+		        dbcon.commit();
+		        
+		        // display transaction information
+	        	query="SELECT * FROM sales WHERE sales.customerId=? AND sales.movieId=? AND sales.saleDate=?";
+	        	userStatement = dbcon.prepareStatement(query);
+		        userStatement.setString(1, customerId);
+		        userStatement.setString(2, movie_id);
+		        userStatement.setString(3, saleDate);
+	        	rs=userStatement.executeQuery();
+	        	dbcon.commit();
 	        	
-	        	//INSERT INTO sales (customerId, movieId, saleDate) VALUES ('135006', 'tt0399582', '2019-02-01');
-		        //Insert sale record.
-	        	/*
-	        	for(int i=0; i<quant; i++) {
-	        		query="INSERT INTO sales (customerId, movieId, saleDate) VALUES ('"+customerId+"','"+movie_id+"','"+saleDate+"')";
-	        		int r=statement.executeUpdate(query);
-	        		
-			        query="SELECT * FROM sales WHERE sales.customerId='"+customerId+"' AND sales.movieId='"+movie_id+"' AND sales.saleDate='"+saleDate+"'";
-			        rs=statement.executeQuery(query);
-			        rs.next();
-			        String sale_id=rs.getString("id");
-			        
-			        JsonObject jsonObject = new JsonObject();
-			        jsonObject.addProperty("sale_id", String.valueOf(Integer.valueOf(sale_id)+i));
-			        jsonObject.addProperty("movie_title", movie_title);
-			        jsonArray.add(jsonObject);
-			        
-			        System.out.println("sale_id: "+String.valueOf(Integer.valueOf(sale_id)+i));
-			        System.out.println("movie_title: "+movie_title);
-	        	}*/
-	        	query="INSERT INTO sales (customerId, movieId, saleDate, quantity) VALUES ('"+customerId+"','"+movie_id+"','"+saleDate+"','"+quantity+"')";
-	        	int r=statement.executeUpdate(query);
-	        	
-	        	query="SELECT * FROM sales WHERE sales.customerId='"+customerId+"' AND sales.movieId='"+movie_id+"' AND sales.saleDate='"+saleDate+"'";
-	        	rs=statement.executeQuery(query);
+
 	        	rs.next();
 	        	String sale_id=rs.getString("id");
 	        	

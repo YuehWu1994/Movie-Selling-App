@@ -37,6 +37,8 @@ public class SingleStarServlet extends HttpServlet {
 
 		// Output stream to STDOUT
 		PrintWriter out = response.getWriter();
+		
+		// prepare string and statement
 
 		try {
 			// Get a connection from dataSource

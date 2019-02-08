@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -39,17 +40,26 @@ public class MainServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("application/json"); // Response mime type
 		PrintWriter out = response.getWriter();
+		
+		
 		try {
             // Get a connection from dataSource
             Connection dbcon = dataSource.getConnection();
-
+            dbcon.setAutoCommit(false);
             // Declare our statement
-            Statement statement = dbcon.createStatement();
+            //Statement statement = dbcon.createStatement();
 
-            String query = "SELECT * from genres";
+            
+            
+         // prepare string and statement
+    		PreparedStatement genreStatement = null;
+            String genreStr = "SELECT * from genres";
+            
+            dbcon.setAutoCommit(false);
+            genreStatement = dbcon.prepareStatement(genreStr);
             
             // Perform the query
-            ResultSet rs = statement.executeQuery(query);
+            ResultSet rs = genreStatement.executeQuery();
             
             JsonArray jsonArray = new JsonArray();
             
@@ -62,7 +72,7 @@ public class MainServlet extends HttpServlet {
             out.write(jsonArray.toString());
             response.setStatus(200);
             rs.close();
-            statement.close();
+            genreStatement.close();
             dbcon.close();
 		} catch (Exception e) {
 			// write error message JSON object to output

@@ -57,14 +57,20 @@ public class checkoutServlet extends HttpServlet {
         
         try {
         	Connection dbcon = dataSource.getConnection();
-            // Declare our statement
-            Statement statement = dbcon.createStatement();
+        	
+            // prepare string and statement 
+            PreparedStatement statement = null;
+            String query = "SELECT * FROM (SELECT c.firstName, c.lastName, c.ccId,  cc.expiration FROM `customers` c JOIN `creditcards` cc ON c.ccId = cc.id) As s WHERE s.firstName =? AND s.lastName = ?";
             
-            // Query database to get top 20 movies list.
-            String query = "SELECT * FROM (SELECT c.firstName, c.lastName, c.ccId,  cc.expiration FROM `customers` c JOIN `creditcards` cc ON c.ccId = cc.id) As s WHERE s.firstName ='" + firstName + "' AND s.lastName = '" + lastName + "'";
+            dbcon.setAutoCommit(false);
+            statement = dbcon.prepareStatement(query);
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+        	
+            // execute the statement
+            ResultSet rs = statement.executeQuery();
+            dbcon.commit();
             
-            // Perform the query
-            ResultSet rs = statement.executeQuery(query);
             JsonArray jsonArray = new JsonArray();
             
             if(!rs.next()) {
@@ -80,11 +86,6 @@ public class checkoutServlet extends HttpServlet {
                 		break;
                 	}
                 	else {
-                		//transacionStatus = 0;
-                		// getSession() : if exist, get the id, if not generate another one
-                        //String sessionId = ((HttpServletRequest) request).getSession().getId(); 
-                        //Long lastAccessTime = ((HttpServletRequest) request).getSession().getLastAccessedTime();
-                        //request.getSession().setAttribute("user", new User(username));
 
                         JsonObject responseJsonObject = new JsonObject();
                         responseJsonObject.addProperty("status", "success");
@@ -118,8 +119,6 @@ public class checkoutServlet extends HttpServlet {
 			response.setStatus(500);
 
         }
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
