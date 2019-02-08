@@ -17,6 +17,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jasypt.util.password.StrongPasswordEncryptor;
+
 
 /**
  * This class is declared as LoginServlet in web annotation, 
@@ -66,9 +68,14 @@ public class LoginServlet extends HttpServlet {
             }
             else {
             	do {
-                	String _password = rs.getString("password");
-                	if(password.equals(_password)) {
-                		
+                	String _encryptedPassword = rs.getString("password");
+        			
+        			// use the same encryptor to compare the user input password with encrypted password stored in DB
+        			boolean success = new StrongPasswordEncryptor().checkPassword(password, _encryptedPassword);
+        			System.out.println("_encryptedPassword=" + _encryptedPassword);
+        			System.out.println("typepassword=" + password);
+        			
+                	if(success) {
                 		// Verify reCAPTCHA
                         String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
                         System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
