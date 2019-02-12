@@ -1,0 +1,14 @@
+First, I join the two tables movies and ratings with the same id and movieid.
+query="SELECT * FROM `movies` m JOIN `ratings` r ON m.id = r.movieId";
+
+Then, based on the first query, I get the movie by title:
+query="SELECT * FROM ("+query+") q WHERE q.title like '%"+Title+"%'";
+
+I get the movie by year:
+query="SELECT * FROM ("+query+") q WHERE q.year like '%"+Year+"%'";
+
+I get the movie by director:
+query="SELECT * FROM ("+query+") q WHERE q.director like '%"+Director+"%'";
+
+As for getting the movie by stars, I also join stars_in_movies and stars tables:
+query="SELECT q.id, q.title, q.year, q.director, q.rating FROM ("+query+") q JOIN `stars_in_movies` sim ON q.id=sim.movieId JOIN `stars` s ON s.id=sim.starId WHERE s.name like "+"'%"+Star_name+"%'";
