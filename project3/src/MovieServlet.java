@@ -53,7 +53,7 @@ public class MovieServlet extends HttpServlet {
         // prepared string
        	PreparedStatement searchStatement = null;
        	PreparedStatement sizeStatement = null;
-        String baseSelect = "SELECT * FROM `movies` m JOIN `ratings` r ON m.id = r.movieId";
+        String baseSelect = "SELECT * FROM `movies` m LEFT JOIN `ratings` r ON m.id = r.movieId";
         String searchStr = "";
         
         // Get movies and rating.
@@ -170,7 +170,7 @@ public class MovieServlet extends HttpServlet {
             PreparedStatement genreStatement = null;
             String genStr = "SELECT GROUP_CONCAT(g.name) AS genreList FROM  `genres` g JOIN `genres_in_movies` gm ON gm.genreId = g.id AND gm.movieId =?";
             PreparedStatement starStatement = null;
-            String starStr = "SELECT * from movies as m, ratings as r, stars_in_movies as sim, stars as s where s.id = sim.starId and m.id = sim.movieId and r.movieId = m.id and m.id =?";
+            String starStr = "SELECT * from movies as m, stars_in_movies as sim, stars as s where m.id =? and s.id = sim.starId and m.id = sim.movieId";
             
             // Iterate through each row of rs
             while (rs.next()) {         	

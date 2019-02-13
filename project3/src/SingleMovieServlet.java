@@ -43,7 +43,7 @@ public class SingleMovieServlet extends HttpServlet {
 			Connection dbcon = dataSource.getConnection();
 
 			// Construct a query with parameter represented by "?"
-			String query = "SELECT * from movies as m, ratings as r, stars_in_movies as sim, stars as s where s.id = sim.starId and m.id = sim.movieId and r.movieId = m.id and m.id = ?";
+			String query = "SELECT * from (SELECT * from movies m LEFT JOIN ratings r ON m.id = r.movieId WHERE m.id = ?) mc , stars_in_movies as sim, stars as s where s.id = sim.starId and mc.id = sim.movieId";
 			// String query2 = "SELECT GROUP_CONCAT(g.name) AS genreList FROM  `genres` g JOIN `genres_in_movies` gm ON gm.genresId = g.id AND gm.movieId = ?"; //Yueh
 			String query2 = "SELECT GROUP_CONCAT(g.name) AS genreList FROM  `genres` g JOIN `genres_in_movies` gm ON gm.genreId = g.id AND gm.movieId = ?";
 			
