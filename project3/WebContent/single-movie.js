@@ -104,39 +104,7 @@ function handleResult(resultData) {
     rowHTML += "</h5></div><div class='col-lg-2'></div></div><br></br>";
     infoElement.append(rowHTML);
     
-    
-      
-      
-    
-    
-//    <div class="row">
-//      <div class="col-lg-3"><h4>Stars</h4></div>
-//      <div class="col-lg-6"><h4>rerwr, ewrwqer, aerwq, awrthterh, ewr</h4></div>
-//      <div class="col-lg-3"></div>
-//    </div>
 
-
-    // Populate the star table
-    // Find the empty table body by id "movie_table_body"
-//    let movieTableBodyElement = jQuery("#movie_table_body");
-//
-//    // Concatenate the html tags with resultData jsonObject to create table rows
-//    for (let i = 0; i < Math.min(10, resultData.length); i++) {
-//        let rowHTML = "";
-//        rowHTML += "<tr>";
-//        //rowHTML += "<th>" + resultData[i]["s_name"] + "</th>";
-//        rowHTML +=
-//            "<th>" +
-//            // Add a link to single-movie.html with id passed with GET url parameter
-//            '<a href="single-star.html?p='+currentPage+'&numRecord='+recordNum+'&genre='+genre+'&id=' + resultData[i]['starId'] +'&Title='+Title+'&Year='+Year+'&Director='+Director+'&Star_name='+Star_name+ '">'
-//            + resultData[i]["starName"] +     // display movie_name for the link text
-//            '</a>' +
-//            "</th>";
-//        rowHTML += "</tr>";
-//        
-//        // Append the row created to the table body, which will refresh the page
-//        movieTableBodyElement.append(rowHTML);
-//    }
     
     //Go back to movies list
     let go_back = jQuery("#go_back");

@@ -19,8 +19,8 @@ public class LoginFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+        
         System.out.println("LoginFilter: " + httpRequest.getRequestURI());
-
         // Check if the URL is allowed to be accessed without log in
         if (this.isUrlAllowedWithoutLogin(httpRequest.getRequestURI())) {
             // Keep default action: pass along the filter chain
@@ -45,8 +45,10 @@ public class LoginFilter implements Filter {
     private boolean isUrlAllowedWithoutLogin(String requestURI) {
         requestURI = requestURI.toLowerCase();
 
-        return requestURI.endsWith("login.html") || requestURI.endsWith("login.js")
-                || requestURI.endsWith("api/login");
+        return (requestURI.endsWith("login.html") || requestURI.endsWith("login.js")
+                || requestURI.endsWith("api/login") || requestURI.endsWith("_dashboard") || requestURI.endsWith("_dashboard.html") 
+                || requestURI.endsWith("_dashboard.js")|| requestURI.endsWith("api/_dashboardlogin"));
+         
     }
 
     /**

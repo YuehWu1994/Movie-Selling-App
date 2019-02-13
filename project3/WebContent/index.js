@@ -112,25 +112,6 @@ function handleStarResult(resultData) {
         starTableBodyElement.append(rowHTML);
     }
     
-    //pagination
-    /*
-    let paginationElement = jQuery("#pagination_list");
-    let rowHTML = "<ul class='pagination justify-content-center'>";
-    if(currentPage-1 >= 0) rowHTML += "<li class='page-item'>";
-    else rowHTML += "<li class='page-item disabled'>";
-    rowHTML += "<a class='page-link' href='?p="+ (currentPage-1) + '&numRecord=' + recordNum +"'>" + 'Previous' + "</a></li>";
-    for (let i = currentPage-3; i <= currentPage+3; i++) {
-    	if(i < 0 || i >= moviePage) continue;
-    	if(i == currentPage) rowHTML += "<li class='page-item active'>";
-    	else rowHTML += "<li class='page-item'>";
-    	rowHTML += "<a class='page-link' href='?p="+ i + '&numRecord=' + recordNum +"'>" + (i+1) + "</a></li>";
-    }
-    if(currentPage+1 < moviePage) rowHTML += "<li class='page-item'>";
-    else rowHTML += "<li class='page-item disabled'>";
-    rowHTML += "<a class='page-link' href='?p="+ (currentPage+1) + '&numRecord=' + recordNum +"'>" + 'Next' + "</a></li>"+ "</ul>";
-    rowHTML += "</ul>";*/
-    
-    //'<a href="index.html?p=0&numRecord=20&genre='+ resultData[i]["genre_name"] +'">'
     
     let paginationElement = jQuery("#pagination_list");
     let rowHTML = "<ul class='pagination justify-content-center'>";
