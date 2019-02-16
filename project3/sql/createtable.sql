@@ -1,6 +1,7 @@
 create database moviedb;
 use moviedb;
 
+## change the length of the id in movies.
 CREATE TABLE movies (
     id VARCHAR(10) PRIMARY KEY NOT NULL,
     title VARCHAR(100) DEFAULT '',
@@ -8,12 +9,12 @@ CREATE TABLE movies (
     director VARCHAR(100) DEFAULT ''
 );
 CREATE TABLE stars (
-    id VARCHAR(10) PRIMARY KEY NOT NULL,
+    id VARCHAR(100) PRIMARY KEY NOT NULL,
     name VARCHAR(100) DEFAULT '',
     birthYear INT
 );
 CREATE TABLE stars_in_movies (
-	starId VARCHAR(10) DEFAULT '',
+	starId VARCHAR(100) DEFAULT '',
     movieId VARCHAR(10) DEFAULT '',
     FOREIGN KEY (starId) REFERENCES stars(id) ON DELETE CASCADE,
     FOREIGN KEY (movieId) REFERENCES movies(id) ON DELETE CASCADE
