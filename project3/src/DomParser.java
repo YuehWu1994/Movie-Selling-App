@@ -21,14 +21,21 @@ import java.sql.Statement;
 import java.sql.*;
 
 import parsexml.*;
+import java.util.*;
 
 public class DomParser {
     
-    //List<Employee> myEmpls;
 	List<directorfilms> list_dirfilms;
 	List<actor> list_actors;
 	List<stars_in_movies> list_sim;
-
+	
+	//Cache query results.
+	Set<String> set_movies_id=new HashSet<>(); 
+	Map<String, Integer> map_genres=new HashMap<>();
+	Set<String> set_gim=new HashSet<>();
+	Set<String> set_stars_id=new HashSet<>();
+	Set<String> set_sim=new HashSet<>();
+	
     Document mains, actors, casts;
 
     public DomParser() {
@@ -45,16 +52,19 @@ public class DomParser {
     		Connection dbcon = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
                     "mytestuser", "mypassword");*/
     		Connection dbcon = DriverManager.getConnection("jdbc:mysql:///moviedb", "mytestuser", "mypassword");
+    		
     		//parse the xml file and get the dom object
             parseXmlFile();
 
             //get each employee element and create a Employee object
             parseDocument();
             
-            
             //load mains243.xml
+            
             insert_movies(dbcon);
             insert_genres(dbcon);
+            Set<String> t1=set_movies_id;
+            Map<String, Integer> t2=map_genres;
             insert_genres_in_movies(dbcon);
             
             //load actors63.xml
@@ -66,21 +76,6 @@ public class DomParser {
     	catch (Exception e){
     		System.out.printf("connection error: %s", e.getMessage());
     	}
-    	/*
-        //parse the xml file and get the dom object
-        parseXmlFile();
-
-        //get each employee element and create a Employee object
-        parseDocument();
-        
-        //load mains243.xml
-        
-        insert_movies();
-        insert_genres();
-        insert_genres_in_movies();
-        
-        //load actors.xml
-        //insert_stars();*/
     }
 
     private void parseXmlFile() {
@@ -92,11 +87,9 @@ public class DomParser {
             DocumentBuilder db = dbf.newDocumentBuilder();
 
             //parse using builder to get DOM representation of the XML file
-            //dom = db.parse("employees.xml");
             mains = db.parse("mains243.xml");
             actors = db.parse("actors63.xml");
             casts = db.parse("casts124.xml");
-            //mains = db.parse("test.xml");
             
         } catch (ParserConfigurationException pce) {
             pce.printStackTrace();
@@ -108,7 +101,6 @@ public class DomParser {
     }
 
     private void parseDocument() {
-        //get the root elememt
         Element doc_mains = mains.getDocumentElement();
         Element doc_actors = actors.getDocumentElement();
         Element doc_sim = casts.getDocumentElement();
@@ -141,39 +133,9 @@ public class DomParser {
         	}
         }
     }
-
-    /**
-     * I take an employee element and read the values in, create
-     * an Employee object and return it
-     * 
-     * @param empEl
-     * @return
-     */
-    /*
-    private Employee getEmployee(Element empEl) {
-
-        //for each <employee> element get text or int values of 
-        //name ,id, age and name
-        String name = getTextValue(empEl, "Name");
-        System.out.println(getTextValue(empEl, "First"));
-        System.out.println(getTextValue(empEl, "Last"));
-        int id = getIntValue(empEl, "Id");
-        int age = getIntValue(empEl, "Age");
-
-        String type = empEl.getAttribute("type");
-
-        //Create a new Employee with the value read from the xml nodes
-        Employee e = new Employee(name, id, age, type);
-
-        return e;
-    }*/
-    
     
     private directorfilms getdirectorfilms(Element dirfilm) {
     	String director=getTextValue(dirfilm, "dirname");
-    	
-    	//System.out.printf("director: %s", director);
-    	//System.out.println();
     	
     	NodeList films=dirfilm.getElementsByTagName("film");
     	List<film> list_films=new ArrayList<>();
@@ -187,11 +149,40 @@ public class DomParser {
                 String title=getTextValue(fm, "t");
                 Integer year=getIntValue(fm, "year");
                 if(movie_id == null || title == null || year == null || director == null) continue;
+                /*
+                if(movie_id == null) {
+                	System.out.println("movies id is null");
+                	continue;
+                }
+                if(title == null) {
+                	System.out.println("movies title is null");
+                	continue;
+                }
+                if(year == null) {
+                	System.out.println("movies year is null");
+                	continue;
+                }
+                if(director == null) {
+                	System.out.println("movies director is null");
+                	continue;
+                }*/
                 
                 director=director.trim();
                 movie_id=movie_id.trim();
                 title=title.trim();
-                if(director.length() == 0 || movie_id.length() == 0 || title.length() == 0) continue;
+                //if(director.length() == 0 || movie_id.length() == 0 || title.length() == 0) continue;
+                if(movie_id.length() == 0) {
+                	System.out.println("movies id is empty");
+                	continue;
+                }
+                if(title.length() == 0) {
+                	System.out.println("movies title is empty");
+                	continue;
+                }
+                if(director.length() == 0) {
+                	System.out.println("movies director is empty");
+                	continue;
+                }
                 
                 //Get list of genres.
                 List<String> list_genres=new ArrayList<>();
@@ -208,11 +199,8 @@ public class DomParser {
                 		str_genre=str_genre.trim();
                 		if(str_genre.length() == 0) continue;
                 		list_genres.add(str_genre);
-                		//System.out.println(str_genre);
-                		//System.out.println(genres.item(j).getFirstChild().getNodeValue());
                 	}
                 }
-                //NodeList films=dirfilm.getElementsByTagName("film");
                 list_films.add(new film(movie_id, title, year, list_genres));
             }
         }
@@ -222,21 +210,39 @@ public class DomParser {
     private actor getactor(Element acs) {
     	String id=getTextValue(acs, "stagename");
     	if(id == null) {
-    		System.out.println("actor's id(stagename) is null");
+    		//System.out.println("actors tag <stagename> is null");
     		return null;
     	}
     	
     	//Check if acs element has a complete firstname and lastname.
     	String first_name=getTextValue(acs, "firstname");
     	String last_name=getTextValue(acs, "familyname");
+    	/*
     	if(first_name == null || last_name == null) {
     		System.out.println("actor's name is null");
+    		return null;
+    	}*/
+    	if(first_name == null) {
+    		//System.out.println("actors tag <firstname> is null");
+    		return null;
+    	}
+    	if(last_name == null) {
+    		//System.out.println("actors tag <familyname> is null");
     		return null;
     	}
     	first_name=first_name.trim();
     	last_name=last_name.trim();
+    	/*
     	if(first_name.length() == 0 || last_name.length() == 0) {
     		System.out.println("actor's name is empty");
+    		return null;
+    	}*/
+    	if(first_name.length() == 0) {
+    		System.out.println("actors tag <firstname> is empty");
+    		return null;
+    	}
+    	if(last_name.length() == 0) {
+    		System.out.println("actors tag <familyname> is empty");
     		return null;
     	}
     	
@@ -247,13 +253,25 @@ public class DomParser {
     
     private stars_in_movies get_sim(Element sim) {
     	String starId=getTextValue(sim, "a");
+    	/*
     	if(starId == null || starId.length() == 0) {
-    		System.out.println("casts' tag <a> is null");
+    		//System.out.println("casts tag <a> is null");
+    		return null;
+    	}*/
+    	if(starId == null) return null;
+    	if(starId.length() == 0) {
+    		System.out.println("casts tag <a> is empty");
     		return null;
     	}
     	String movieId=getTextValue(sim, "f");
+    	/*
     	if(movieId == null || movieId.length() == 0) {
-    		System.out.println("casts' tag <f> is null");
+    		//System.out.println("casts tag <f> is null");
+    		return null;
+    	}*/
+    	if(movieId == null) return null;
+    	if(movieId.length() == 0) {
+    		System.out.println("casts tag <f> is empty");
     		return null;
     	}
     	return new stars_in_movies(starId, movieId);
@@ -275,7 +293,7 @@ public class DomParser {
         if (nl != null && nl.getLength() > 0) {
             Element el = (Element) nl.item(0);
             if(el.getFirstChild() == null) {
-            	System.out.printf("tag %s is null", tagName);
+            	System.out.printf("tag <%s> is null", tagName);
             	System.out.println();
             	return null;
             }
@@ -327,13 +345,21 @@ public class DomParser {
     				PreparedStatement insertStatement = null;
     				ResultSet rs = null;
     				
+    				//Check if movie_id exists.
+    				if(set_movies_id.contains(movie_id)) {
+    					System.out.printf("movies id %s exist", movie_id);
+    					System.out.println();
+    					continue;
+    				}
+    				set_movies_id.add(movie_id);
+    				
     				//dbcon.setAutoCommit(false);
     				query = "SELECT 1 FROM movies WHERE movies.id=?";
     				insertStatement = dbcon.prepareStatement(query);
     				insertStatement.setString(1, movie_id);
     				rs=insertStatement.executeQuery();
     				if(rs.next()) {
-    					System.out.printf("movie id %s exist", movie_id);
+    					System.out.printf("movies id %s exist", movie_id);
     					System.out.println();
     					continue;
     				}
@@ -383,14 +409,18 @@ public class DomParser {
     				
     				for(String gre : genres) {
     				    //Check if genre exists.
+    					if(map_genres.containsKey(gre)) continue;
+    					
     					query = "SELECT * FROM genres WHERE genres.name = ?;";
     					insertStatement = dbcon.prepareStatement(query);
     					insertStatement.setString(1, gre);
     					rs = insertStatement.executeQuery();
     					
     					if(rs.next()) {
-    						System.out.printf("Genre: %s exists", gre);
+    						System.out.printf("genres %s exists", gre);
     						System.out.println();
+    						Integer genre_id=rs.getInt("id");
+    						map_genres.put(gre, genre_id);
     						continue;
     					}
     					
@@ -407,6 +437,16 @@ public class DomParser {
     						System.out.printf("Fail: %s", insertStatement);
     						System.out.println();
     					}
+    					
+    					//Get genre number and record it.
+    					query = "SELECT * FROM genres WHERE genres.name = ?;";
+    					insertStatement = dbcon.prepareStatement(query);
+    					insertStatement.setString(1, gre);
+    					rs = insertStatement.executeQuery();
+    					if(rs.next()) {
+    						Integer genre_id=rs.getInt("id");
+    						map_genres.put(gre, genre_id);
+    					}
 
     					insertStatement.close();
     				}
@@ -420,7 +460,7 @@ public class DomParser {
     
     private void insert_genres_in_movies(Connection dbcon) {
     	try {
-    		String query = "";  		
+    		String query = "";
     		
     		for(int i=0; i<list_dirfilms.size(); i++) {
     			directorfilms di_films=list_dirfilms.get(i);
@@ -439,6 +479,7 @@ public class DomParser {
     				
     				for(String gre : genres) {			
     					//Get genre id.
+    					/*
     					Integer genre_id=null;
     					query = "SELECT * FROM genres WHERE genres.name = ?;";
     					insertStatement = dbcon.prepareStatement(query);
@@ -452,16 +493,26 @@ public class DomParser {
     						System.out.printf("Error genre id: %d movie id %s", genre_id, movie_id);
     						System.out.println();
     						continue;
+    					}*/
+
+    					Integer genre_id=map_genres.get(gre);
+    					if(genre_id == null) {
+    						System.out.printf("Genre %s doesn't exist", gre);
+    						continue;
     					}
     					
     					//Check if the query exists.
+    					String gim_query=String.valueOf(genre_id)+movie_id;
+    					if(set_gim.contains(gim_query)) continue;
+    					set_gim.add(gim_query);
+    					
     					query = "SELECT * FROM genres_in_movies WHERE genres_in_movies.genreId = ? AND genres_in_movies.movieId = ?;";
     					insertStatement = dbcon.prepareStatement(query);
     					insertStatement.setInt(1, genre_id);
     					insertStatement.setString(2, movie_id);
     					rs = insertStatement.executeQuery();
     					if(rs.next()) {
-    						System.out.printf("genre_id %s and movie_id %s exists", genre_id, movie_id);
+    						System.out.printf("genre_id %d and movie_id %s exists", genre_id, movie_id);
     						System.out.println();
     						continue;
     					}
@@ -507,13 +558,20 @@ public class DomParser {
 				Integer year=ac.year;
 				
 				//check if star's id exists.
+				if(set_stars_id.contains(id)) {
+					System.out.printf("stars id %s exists", id);
+					System.out.println();
+					continue;
+				}
+				set_stars_id.add(id);
+				
 				query = "SELECT * FROM stars WHERE stars.id = ?;";
 				insertStatement = dbcon.prepareStatement(query);
 				insertStatement.setString(1, id);
 				rs = insertStatement.executeQuery();
 				if(rs.next()) {
 					System.out.printf("star's id %s exists", id);
-					System.out.println();
+					System.out.println();	
 					continue;
 				}
 				
@@ -533,7 +591,7 @@ public class DomParser {
 					System.out.println();
 				}
 				else {
-					System.out.printf("Fail %s", insertStatement);
+					System.out.printf("Fail: %s", insertStatement);
 					System.out.println();
 				}
     		}
@@ -557,6 +615,7 @@ public class DomParser {
 				String movieId=sim.movieId;
 				
 				//check if both starId and movieId exist.
+				/*
 				query = "SELECT * FROM stars WHERE stars.id = ?;";
 				insertStatement = dbcon.prepareStatement(query);
 				insertStatement.setString(1, starId);
@@ -569,9 +628,25 @@ public class DomParser {
 					System.out.printf("starId %s or movieId %s does't exist", starId, movieId);
 					System.out.println();
 					continue;
+				}*/
+				
+				
+				
+				if(!set_stars_id.contains(starId)) {
+					System.out.printf("starId %s doesn't exist", starId);
+					System.out.println();
+					continue;
+				}
+				if(!set_movies_id.contains(movieId)) {
+					System.out.printf("movieId %s doesn't exist", movieId);
+					System.out.println();
+					continue;
 				}
 				
-				//check if star's id exists.
+				//check if query exists.
+				if(set_sim.contains(starId+movieId)) continue;
+				set_sim.add(starId+movieId);
+				
 				query = "SELECT * FROM stars_in_movies WHERE stars_in_movies.starId = ? AND stars_in_movies.movieId = ?;";
 				insertStatement = dbcon.prepareStatement(query);
 				insertStatement.setString(1, starId);
