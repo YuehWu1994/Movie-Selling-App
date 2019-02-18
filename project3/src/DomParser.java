@@ -1,7 +1,4 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,10 +37,12 @@ public class DomParser {
     	list_actors = new ArrayList<>();
     	list_sim = new ArrayList<>();
     }
-
+    
     public void runExample() {
     	
     	try {
+    		//long t1=System.currentTimeMillis()/1000;
+    		
     		Class.forName("com.mysql.jdbc.Driver").newInstance();
     		/*
     		Connection dbcon = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
@@ -67,6 +66,9 @@ public class DomParser {
             
             //load casts124.xml
             insert_stars_in_movies(dbcon);
+            
+            //long t2=System.currentTimeMillis()/1000;
+            //System.out.println(t2-t1);
     	}
     	catch (Exception e){
     		System.out.printf("connection error: %s", e.getMessage());
@@ -302,9 +304,32 @@ public class DomParser {
         return res;
     }
     
+    class ps_index{
+    	String id;
+    	PreparedStatement ps;
+    	ps_index(String id, PreparedStatement ps){
+    		this.id=id;
+    		this.ps=ps;
+    	}
+    }
+    
+    class mv_info{
+    	String id;
+    	String title;
+    	Integer year;
+    	String director;
+    	mv_info(String id, String title, Integer year, String director){
+    		this.id=id;
+    		this.title=title;
+    		this.year=year;
+    		this.director=director;
+    	}
+    }
     private void insert_movies(Connection dbcon) {
     	try {
     		String query = "";
+    		//List<ps_index> list_pre=new ArrayList<>();
+    		List<mv_info> list_info=new ArrayList<>();
     		
     		query = "INSERT INTO movies (id, title, year, director) VALUES(?,?,?,?);";
     		PreparedStatement psInsertRecord=null;
@@ -366,14 +391,28 @@ public class DomParser {
     	            	System.out.println();
     	            }*/
     				
+    				list_info.add(new mv_info(movie_id, title, year, director));
+    				//list_pre.add(new ps_index(movie_id, psInsertRecord));
+    				/*
     				psInsertRecord.setString(1, movie_id);
     				psInsertRecord.setString(2, title);
     				psInsertRecord.setInt(3, year);
     				psInsertRecord.setString(4, director);
-    				psInsertRecord.addBatch();
-    				
-    	            
+    				psInsertRecord.addBatch();*/
     			}
+    		}
+    		
+    		Collections.sort(list_info, new Comparator<mv_info>() {
+    			public int compare(mv_info a, mv_info b) {
+    				return a.id.compareTo(b.id);
+    			}
+    		});
+    		for(mv_info ele : list_info) {
+    			psInsertRecord.setString(1, ele.id);
+    			psInsertRecord.setString(2, ele.title);
+    			psInsertRecord.setInt(3, ele.year);
+    			psInsertRecord.setString(4, ele.director);
+    			psInsertRecord.addBatch();
     		}
     		psInsertRecord.executeBatch();
     		dbcon.commit();
@@ -546,7 +585,6 @@ public class DomParser {
     					psInsertRecord.setInt(1, genre_id);
     					psInsertRecord.setString(2, movie_id);
     					psInsertRecord.addBatch();
-    					
 						
     				}
     				//dbcon.setAutoCommit(false);
@@ -559,12 +597,37 @@ public class DomParser {
     		System.out.printf("insert genres in movies error %s", e.getMessage());
     	}
     }	
-
+    
+    class star_info {
+    	String id;
+    	String name;
+    	Integer year;
+    	star_info(String id, String name, Integer year){
+    		this.id=id;
+    		this.name=name;
+    		this.year=year;
+    	}
+    }
+    /*
+    class mv_nfo{
+    	String id;
+    	String title;
+    	Integer year;
+    	String director;
+    	mv_nfo(String id, String title, Integer year, String director){
+    		this.id=id;
+    		this.title=title;
+    		this.year=year;
+    		this.director=director;
+    	}
+    }*/
     private void insert_stars(Connection dbcon) {
     	try {
     		PreparedStatement insertStatement = null;
 			ResultSet rs = null;
     		String query = "";
+    		//List<ps_index> list_pre=new ArrayList<>();
+    		List<star_info> list_info=new ArrayList<>();
     		
     		query = "INSERT INTO stars (id, name, birthYear) VALUES(?,?,?);";
     		PreparedStatement psInsertRecord=null;
@@ -617,11 +680,34 @@ public class DomParser {
 					System.out.printf("Fail: %s", insertStatement);
 					System.out.println();
 				}*/
-				
+				/*
 				psInsertRecord.setString(1, id);
 				psInsertRecord.setString(2, name);
 				if(year == null) psInsertRecord.setNull(3, Types.INTEGER);
-				else psInsertRecord.setInt(3, year);
+				else psInsertRecord.setInt(3, year);*/
+				//psInsertRecord.addBatch();
+				//list_pre.add(new ps_index(id, psInsertRecord));
+				list_info.add(new star_info(id, name, year));
+    		}/*
+    		Collections.sort(list_pre, new Comparator<ps_index>() {
+    			public int compare(ps_index a, ps_index b) {
+    				return a.id.compareTo(b.id);
+    			}
+    		});
+    		for(ps_index p : list_pre) {
+    			p.ps.addBatch();
+    		}
+    		psInsertRecord.executeBatch();*/
+    		Collections.sort(list_info, new Comparator<star_info>() {
+    			public int compare(star_info a, star_info b) {
+    				return a.id.compareTo(b.id);
+    			}
+    		});
+    		for(star_info ele : list_info) {
+    			psInsertRecord.setString(1, ele.id);
+				psInsertRecord.setString(2, ele.name);
+				if(ele.year == null) psInsertRecord.setNull(3, Types.INTEGER);
+				else psInsertRecord.setInt(3, ele.year);
 				psInsertRecord.addBatch();
     		}
     		psInsertRecord.executeBatch();
@@ -637,6 +723,7 @@ public class DomParser {
     		PreparedStatement insertStatement = null;
 			ResultSet rs = null;
     		String query = "";
+    		List<ps_index> list_pre=new ArrayList<>();
     		
     		query = "INSERT INTO stars_in_movies (starId, movieId) VALUES(?,?);";
     		PreparedStatement psInsertRecord=null;
@@ -711,7 +798,6 @@ public class DomParser {
 				psInsertRecord.setString(2, movieId);
 				psInsertRecord.addBatch();
     		}
-    		
     		psInsertRecord.executeBatch();
     		dbcon.commit();
     	}
