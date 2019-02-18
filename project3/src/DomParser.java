@@ -41,7 +41,7 @@ public class DomParser {
     public void runExample() {
     	
     	try {
-    		//long t1=System.currentTimeMillis()/1000;
+    		long t1=System.currentTimeMillis()/1000;
     		
     		Class.forName("com.mysql.jdbc.Driver").newInstance();
     		/*
@@ -67,8 +67,9 @@ public class DomParser {
             //load casts124.xml
             insert_stars_in_movies(dbcon);
             
-            //long t2=System.currentTimeMillis()/1000;
-            //System.out.println(t2-t1);
+            
+            long t2=System.currentTimeMillis()/1000;
+            System.out.println(t2-t1);
     	}
     	catch (Exception e){
     		System.out.printf("connection error: %s", e.getMessage());
@@ -150,7 +151,6 @@ public class DomParser {
                 director=director.trim();
                 movie_id=movie_id.trim();
                 title=title.trim();
-                //if(director.length() == 0 || movie_id.length() == 0 || title.length() == 0) continue;
                 if(movie_id.length() == 0) {
                 	System.out.println("movies id is empty");
                 	continue;
@@ -190,33 +190,21 @@ public class DomParser {
     private actor getactor(Element acs) {
     	String id=getTextValue(acs, "stagename");
     	if(id == null) {
-    		//System.out.println("actors tag <stagename> is null");
     		return null;
     	}
     	
     	//Check if acs element has a complete firstname and lastname.
     	String first_name=getTextValue(acs, "firstname");
     	String last_name=getTextValue(acs, "familyname");
-    	/*
-    	if(first_name == null || last_name == null) {
-    		System.out.println("actor's name is null");
-    		return null;
-    	}*/
     	if(first_name == null) {
-    		//System.out.println("actors tag <firstname> is null");
     		return null;
     	}
     	if(last_name == null) {
-    		//System.out.println("actors tag <familyname> is null");
     		return null;
     	}
     	first_name=first_name.trim();
     	last_name=last_name.trim();
-    	/*
-    	if(first_name.length() == 0 || last_name.length() == 0) {
-    		System.out.println("actor's name is empty");
-    		return null;
-    	}*/
+
     	if(first_name.length() == 0) {
     		System.out.println("actors tag <firstname> is empty");
     		return null;
@@ -233,22 +221,13 @@ public class DomParser {
     
     private stars_in_movies get_sim(Element sim) {
     	String starId=getTextValue(sim, "a");
-    	/*
-    	if(starId == null || starId.length() == 0) {
-    		//System.out.println("casts tag <a> is null");
-    		return null;
-    	}*/
     	if(starId == null) return null;
     	if(starId.length() == 0) {
     		System.out.println("casts tag <a> is empty");
     		return null;
     	}
+    	
     	String movieId=getTextValue(sim, "f");
-    	/*
-    	if(movieId == null || movieId.length() == 0) {
-    		//System.out.println("casts tag <f> is null");
-    		return null;
-    	}*/
     	if(movieId == null) return null;
     	if(movieId.length() == 0) {
     		System.out.println("casts tag <f> is empty");
@@ -304,15 +283,6 @@ public class DomParser {
         return res;
     }
     
-    class ps_index{
-    	String id;
-    	PreparedStatement ps;
-    	ps_index(String id, PreparedStatement ps){
-    		this.id=id;
-    		this.ps=ps;
-    	}
-    }
-    
     class mv_info{
     	String id;
     	String title;
@@ -328,7 +298,6 @@ public class DomParser {
     private void insert_movies(Connection dbcon) {
     	try {
     		String query = "";
-    		//List<ps_index> list_pre=new ArrayList<>();
     		List<mv_info> list_info=new ArrayList<>();
     		
     		query = "INSERT INTO movies (id, title, year, director) VALUES(?,?,?,?);";
@@ -353,7 +322,8 @@ public class DomParser {
     				PreparedStatement insertStatement = null;
     				ResultSet rs = null;
     				
-    				//Check if movie_id exists.
+    				//check is the movie exists.
+    				//cache the result. 
     				if(set_movies_id.contains(movie_id)) {
     					System.out.printf("movies id %s exist", movie_id);
     					System.out.println();
@@ -361,7 +331,6 @@ public class DomParser {
     				}
     				set_movies_id.add(movie_id);
     				
-    				//dbcon.setAutoCommit(false);
     				query = "SELECT 1 FROM movies WHERE movies.id=?";
     				insertStatement = dbcon.prepareStatement(query);
     				insertStatement.setString(1, movie_id);
@@ -372,36 +341,10 @@ public class DomParser {
     					continue;
     				}
     				insertStatement.close();
-    				/*
-    				//Insert into 'movies' table.
-    				query = "INSERT INTO movies (id, title, year, director) VALUES(?,?,?,?);";
-    				insertStatement = dbcon.prepareStatement(query);
-    				insertStatement.setString(1, movie_id);
-    				insertStatement.setString(2, title);
-    				insertStatement.setInt(3, year);
-    				insertStatement.setString(4, director);
-    				int af = insertStatement.executeUpdate();
-    				//dbcon.commit();
-    	            if(af != 0) {
-    	            	System.out.printf("Success %s", insertStatement);
-    	            	System.out.println();
-    	            }
-    	            else {
-    	            	System.out.printf("Fail: %s", insertStatement);
-    	            	System.out.println();
-    	            }*/
-    				
+
     				list_info.add(new mv_info(movie_id, title, year, director));
-    				//list_pre.add(new ps_index(movie_id, psInsertRecord));
-    				/*
-    				psInsertRecord.setString(1, movie_id);
-    				psInsertRecord.setString(2, title);
-    				psInsertRecord.setInt(3, year);
-    				psInsertRecord.setString(4, director);
-    				psInsertRecord.addBatch();*/
     			}
     		}
-    		
     		Collections.sort(list_info, new Comparator<mv_info>() {
     			public int compare(mv_info a, mv_info b) {
     				return a.id.compareTo(b.id);
@@ -474,10 +417,7 @@ public class DomParser {
     						System.out.printf("Fail: %s", insertStatement);
     						System.out.println();
     					}
-    					/*
-    					psInsertRecord.setString(1, gre);
-    					psInsertRecord.addBatch();*/
-    					
+
     					//Get genre number and record it.
     					query = "SELECT * FROM genres WHERE genres.name = ?;";
     					insertStatement = dbcon.prepareStatement(query);
@@ -491,9 +431,6 @@ public class DomParser {
     				}
     			}
     		}
-    		/*
-    		psInsertRecord.executeBatch();
-            dbcon.commit();*/
     	}
     	catch (Exception e){
     		System.out.printf("insert genre error %s", e.getMessage());
@@ -511,7 +448,6 @@ public class DomParser {
     		
     		for(int i=0; i<list_dirfilms.size(); i++) {
     			directorfilms di_films=list_dirfilms.get(i);
-    			String director=di_films.director;
     			List<film> films=di_films.films;
     			int size=films.size();
     			
@@ -548,7 +484,7 @@ public class DomParser {
     						continue;
     					}
     					
-    					//Check if the query exists.
+    					//Check if the query exists. Cache the result.
     					String gim_query=String.valueOf(genre_id)+movie_id;
     					if(set_gim.contains(gim_query)) continue;
     					set_gim.add(gim_query);
@@ -565,29 +501,11 @@ public class DomParser {
     					}
     					insertStatement.close();
     					
-    					//Insert into 'genres_in_movies' table.
-    					/*
-    					query = "INSERT INTO genres_in_movies (genreId, movieId) VALUES(?,?);";
-    					insertStatement = dbcon.prepareStatement(query);
-    					insertStatement.setInt(1, genre_id);
-    					insertStatement.setString(2, movie_id);
-    					
-    					int af = insertStatement.executeUpdate();
-    					
-						if(af != 0) {
-							System.out.printf("Succees: %s", insertStatement);
-							System.out.println();
-						}
-						else {
-							System.out.printf("Fail: %s", insertStatement);
-							System.out.println();
-						}*/
     					psInsertRecord.setInt(1, genre_id);
     					psInsertRecord.setString(2, movie_id);
     					psInsertRecord.addBatch();
 						
     				}
-    				//dbcon.setAutoCommit(false);
     			}
     		}
     		psInsertRecord.executeBatch();
@@ -608,25 +526,11 @@ public class DomParser {
     		this.year=year;
     	}
     }
-    /*
-    class mv_nfo{
-    	String id;
-    	String title;
-    	Integer year;
-    	String director;
-    	mv_nfo(String id, String title, Integer year, String director){
-    		this.id=id;
-    		this.title=title;
-    		this.year=year;
-    		this.director=director;
-    	}
-    }*/
     private void insert_stars(Connection dbcon) {
     	try {
     		PreparedStatement insertStatement = null;
 			ResultSet rs = null;
     		String query = "";
-    		//List<ps_index> list_pre=new ArrayList<>();
     		List<star_info> list_info=new ArrayList<>();
     		
     		query = "INSERT INTO stars (id, name, birthYear) VALUES(?,?,?);";
@@ -642,7 +546,7 @@ public class DomParser {
 			    String name=ac.name;
 				Integer year=ac.year;
 				
-				//check if star's id exists.
+				//check if star's id exists. Cache the result.
 				if(set_stars_id.contains(id)) {
 					System.out.printf("stars id %s exists", id);
 					System.out.println();
@@ -660,44 +564,9 @@ public class DomParser {
 					continue;
 				}
 				insertStatement.close();
-				//insert star into stars table.
-				/*
-				query = "INSERT INTO stars (id, name, birthYear) VALUES(?,?,?);";
-				insertStatement = dbcon.prepareStatement(query);
-				insertStatement.setString(1, id);
-				insertStatement.setString(2, name);
-				
-				//check if year is null.
-				if(year == null) insertStatement.setNull(3, Types.INTEGER);
-				else insertStatement.setInt(3, year);
-
-				int af = insertStatement.executeUpdate();
-				if(af != 0) {
-					System.out.printf("Success: %s", insertStatement);
-					System.out.println();
-				}
-				else {
-					System.out.printf("Fail: %s", insertStatement);
-					System.out.println();
-				}*/
-				/*
-				psInsertRecord.setString(1, id);
-				psInsertRecord.setString(2, name);
-				if(year == null) psInsertRecord.setNull(3, Types.INTEGER);
-				else psInsertRecord.setInt(3, year);*/
-				//psInsertRecord.addBatch();
-				//list_pre.add(new ps_index(id, psInsertRecord));
 				list_info.add(new star_info(id, name, year));
-    		}/*
-    		Collections.sort(list_pre, new Comparator<ps_index>() {
-    			public int compare(ps_index a, ps_index b) {
-    				return a.id.compareTo(b.id);
-    			}
-    		});
-    		for(ps_index p : list_pre) {
-    			p.ps.addBatch();
     		}
-    		psInsertRecord.executeBatch();*/
+    		
     		Collections.sort(list_info, new Comparator<star_info>() {
     			public int compare(star_info a, star_info b) {
     				return a.id.compareTo(b.id);
@@ -723,7 +592,6 @@ public class DomParser {
     		PreparedStatement insertStatement = null;
 			ResultSet rs = null;
     		String query = "";
-    		List<ps_index> list_pre=new ArrayList<>();
     		
     		query = "INSERT INTO stars_in_movies (starId, movieId) VALUES(?,?);";
     		PreparedStatement psInsertRecord=null;
@@ -738,7 +606,6 @@ public class DomParser {
 				String movieId=sim.movieId;
 				
 				//check if both starId and movieId exist.
-				/*
 				query = "SELECT * FROM stars WHERE stars.id = ?;";
 				insertStatement = dbcon.prepareStatement(query);
 				insertStatement.setString(1, starId);
@@ -747,12 +614,17 @@ public class DomParser {
 				insertStatement = dbcon.prepareStatement(query);
 				insertStatement.setString(1, movieId);
 				ResultSet rs2 = insertStatement.executeQuery();
-				if(!rs1.next() || ! rs2.next()) {
-					System.out.printf("starId %s or movieId %s does't exist", starId, movieId);
+				if(!rs1.next()) {
+					System.out.printf("starId %s does't exist", starId);
 					System.out.println();
 					continue;
-				}*/
-				
+				}
+				if(!rs2.next()) {
+					System.out.printf("movieId %s does't exist", movieId);
+					System.out.println();
+					continue;
+				}
+				//Cache the result
 				if(!set_stars_id.contains(starId)) {
 					System.out.printf("starId %s doesn't exist", starId);
 					System.out.println();
@@ -779,20 +651,6 @@ public class DomParser {
 					continue;
 				}
 				insertStatement.close();
-				/*
-				query = "INSERT INTO stars_in_movies (starId, movieId) VALUES(?,?);";
-				insertStatement = dbcon.prepareStatement(query);
-				insertStatement.setString(1, starId);
-				insertStatement.setString(2, movieId);
-				int af = insertStatement.executeUpdate();
-				if(af != 0) {
-					System.out.printf("Success: %s", insertStatement);
-					System.out.println();
-				}
-				else {
-					System.out.printf("Fail %s", insertStatement);
-					System.out.println();
-				}*/
 
 				psInsertRecord.setString(1, starId);
 				psInsertRecord.setString(2, movieId);
