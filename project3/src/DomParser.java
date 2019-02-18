@@ -1,7 +1,4 @@
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +14,7 @@ import org.xml.sax.SAXException;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.sql.Statement;
+
 import java.sql.*;
 
 import parsexml.*;
@@ -63,8 +60,6 @@ public class DomParser {
             
             insert_movies(dbcon);
             insert_genres(dbcon);
-            Set<String> t1=set_movies_id;
-            Map<String, Integer> t2=map_genres;
             insert_genres_in_movies(dbcon);
             
             //load actors63.xml
@@ -149,23 +144,6 @@ public class DomParser {
                 String title=getTextValue(fm, "t");
                 Integer year=getIntValue(fm, "year");
                 if(movie_id == null || title == null || year == null || director == null) continue;
-                /*
-                if(movie_id == null) {
-                	System.out.println("movies id is null");
-                	continue;
-                }
-                if(title == null) {
-                	System.out.println("movies title is null");
-                	continue;
-                }
-                if(year == null) {
-                	System.out.println("movies year is null");
-                	continue;
-                }
-                if(director == null) {
-                	System.out.println("movies director is null");
-                	continue;
-                }*/
                 
                 director=director.trim();
                 movie_id=movie_id.trim();
@@ -326,7 +304,12 @@ public class DomParser {
     
     private void insert_movies(Connection dbcon) {
     	try {
-    		String query = "";  		
+    		String query = "";
+    		
+    		query = "INSERT INTO movies (id, title, year, director) VALUES(?,?,?,?);";
+    		PreparedStatement psInsertRecord=null;
+    		dbcon.setAutoCommit(false);
+    		psInsertRecord=dbcon.prepareStatement(query);
     		
     		for(int i=0; i<list_dirfilms.size(); i++) {
     			directorfilms di_films=list_dirfilms.get(i);
@@ -363,7 +346,8 @@ public class DomParser {
     					System.out.println();
     					continue;
     				}
-    				
+    				insertStatement.close();
+    				/*
     				//Insert into 'movies' table.
     				query = "INSERT INTO movies (id, title, year, director) VALUES(?,?,?,?);";
     				insertStatement = dbcon.prepareStatement(query);
@@ -380,10 +364,19 @@ public class DomParser {
     	            else {
     	            	System.out.printf("Fail: %s", insertStatement);
     	            	System.out.println();
-    	            }
-    	            insertStatement.close();
+    	            }*/
+    				
+    				psInsertRecord.setString(1, movie_id);
+    				psInsertRecord.setString(2, title);
+    				psInsertRecord.setInt(3, year);
+    				psInsertRecord.setString(4, director);
+    				psInsertRecord.addBatch();
+    				
+    	            
     			}
     		}
+    		psInsertRecord.executeBatch();
+    		dbcon.commit();
     	}
     	catch (Exception e){
     		System.out.printf("insert movies error %s", e.getMessage());
@@ -393,7 +386,12 @@ public class DomParser {
     private void insert_genres(Connection dbcon) {
     	try {
     		String query = "";  		
-
+    		
+    		query = "INSERT INTO genres (name) VALUES(?);";
+    		PreparedStatement psInsertRecord=null;
+    		dbcon.setAutoCommit(false);
+    		psInsertRecord=dbcon.prepareStatement(query);
+    		
     		for(int i=0; i<list_dirfilms.size(); i++) {
     			directorfilms di_films=list_dirfilms.get(i);
     			List<film> films=di_films.films;
@@ -437,6 +435,9 @@ public class DomParser {
     						System.out.printf("Fail: %s", insertStatement);
     						System.out.println();
     					}
+    					/*
+    					psInsertRecord.setString(1, gre);
+    					psInsertRecord.addBatch();*/
     					
     					//Get genre number and record it.
     					query = "SELECT * FROM genres WHERE genres.name = ?;";
@@ -447,11 +448,13 @@ public class DomParser {
     						Integer genre_id=rs.getInt("id");
     						map_genres.put(gre, genre_id);
     					}
-
     					insertStatement.close();
     				}
     			}
     		}
+    		/*
+    		psInsertRecord.executeBatch();
+            dbcon.commit();*/
     	}
     	catch (Exception e){
     		System.out.printf("insert genre error %s", e.getMessage());
@@ -461,6 +464,11 @@ public class DomParser {
     private void insert_genres_in_movies(Connection dbcon) {
     	try {
     		String query = "";
+    		
+    		query = "INSERT INTO genres_in_movies (genreId, movieId) VALUES(?,?);";
+    		PreparedStatement psInsertRecord=null;
+    		dbcon.setAutoCommit(false);
+    		psInsertRecord=dbcon.prepareStatement(query);
     		
     		for(int i=0; i<list_dirfilms.size(); i++) {
     			directorfilms di_films=list_dirfilms.get(i);
@@ -516,8 +524,10 @@ public class DomParser {
     						System.out.println();
     						continue;
     					}
+    					insertStatement.close();
     					
     					//Insert into 'genres_in_movies' table.
+    					/*
     					query = "INSERT INTO genres_in_movies (genreId, movieId) VALUES(?,?);";
     					insertStatement = dbcon.prepareStatement(query);
     					insertStatement.setInt(1, genre_id);
@@ -532,12 +542,18 @@ public class DomParser {
 						else {
 							System.out.printf("Fail: %s", insertStatement);
 							System.out.println();
-						}
-						insertStatement.close();
+						}*/
+    					psInsertRecord.setInt(1, genre_id);
+    					psInsertRecord.setString(2, movie_id);
+    					psInsertRecord.addBatch();
+    					
+						
     				}
     				//dbcon.setAutoCommit(false);
     			}
     		}
+    		psInsertRecord.executeBatch();
+            dbcon.commit();
     	}
     	catch (Exception e){
     		System.out.printf("insert genres in movies error %s", e.getMessage());
@@ -549,6 +565,12 @@ public class DomParser {
     		PreparedStatement insertStatement = null;
 			ResultSet rs = null;
     		String query = "";
+    		
+    		query = "INSERT INTO stars (id, name, birthYear) VALUES(?,?,?);";
+    		PreparedStatement psInsertRecord=null;
+    		dbcon.setAutoCommit(false);
+    		psInsertRecord=dbcon.prepareStatement(query);
+    		
     		for(int i=0; i<list_actors.size(); i++) {
     			actor ac = list_actors.get(i);
     			if(ac == null) continue;
@@ -574,8 +596,9 @@ public class DomParser {
 					System.out.println();	
 					continue;
 				}
-				
+				insertStatement.close();
 				//insert star into stars table.
+				/*
 				query = "INSERT INTO stars (id, name, birthYear) VALUES(?,?,?);";
 				insertStatement = dbcon.prepareStatement(query);
 				insertStatement.setString(1, id);
@@ -593,8 +616,16 @@ public class DomParser {
 				else {
 					System.out.printf("Fail: %s", insertStatement);
 					System.out.println();
-				}
+				}*/
+				
+				psInsertRecord.setString(1, id);
+				psInsertRecord.setString(2, name);
+				if(year == null) psInsertRecord.setNull(3, Types.INTEGER);
+				else psInsertRecord.setInt(3, year);
+				psInsertRecord.addBatch();
     		}
+    		psInsertRecord.executeBatch();
+    		dbcon.commit();
     	}
     	catch (Exception e){
     		System.out.printf("insert stars error %s", e.getMessage());
@@ -606,6 +637,11 @@ public class DomParser {
     		PreparedStatement insertStatement = null;
 			ResultSet rs = null;
     		String query = "";
+    		
+    		query = "INSERT INTO stars_in_movies (starId, movieId) VALUES(?,?);";
+    		PreparedStatement psInsertRecord=null;
+    		dbcon.setAutoCommit(false);
+    		psInsertRecord=dbcon.prepareStatement(query);
     		
     		for(int i=0; i<list_sim.size(); i++) {
     			stars_in_movies sim = list_sim.get(i);
@@ -629,8 +665,6 @@ public class DomParser {
 					System.out.println();
 					continue;
 				}*/
-				
-				
 				
 				if(!set_stars_id.contains(starId)) {
 					System.out.printf("starId %s doesn't exist", starId);
@@ -657,7 +691,8 @@ public class DomParser {
 					System.out.println();
 					continue;
 				}
-				
+				insertStatement.close();
+				/*
 				query = "INSERT INTO stars_in_movies (starId, movieId) VALUES(?,?);";
 				insertStatement = dbcon.prepareStatement(query);
 				insertStatement.setString(1, starId);
@@ -670,8 +705,15 @@ public class DomParser {
 				else {
 					System.out.printf("Fail %s", insertStatement);
 					System.out.println();
-				}
+				}*/
+
+				psInsertRecord.setString(1, starId);
+				psInsertRecord.setString(2, movieId);
+				psInsertRecord.addBatch();
     		}
+    		
+    		psInsertRecord.executeBatch();
+    		dbcon.commit();
     	}
     	catch (Exception e){
     		System.out.printf("insert stars in movies error %s", e.getMessage());
