@@ -1,0 +1,13 @@
+We use 2 methods to for XML parsing optimization. One is cache. We cached the result of the query to limit the numbers of the queries to the database. We used Hash map and Hash set to store the result of the query to prevent duplicate query. The other method used to speed up the parsing is sorting. We sorted the tables based on their primary key before insertion. The following is the result of our methods and the comparison of the execution time.
+
+No optimization:
+50 secs
+
+Only cache the query result
+42 secs
+
+Only sort based on the primary key
+43 secs
+
+Both implemented
+40 secs

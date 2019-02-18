@@ -66,31 +66,3 @@ END
 $$
 DELIMITER ;
 
-# substring
-SELECT SUBSTRING("SQL Tutorial", 5, 3) AS ExtractString;
-
-
-AS
-	DECLARE @mxMovie CHAR(10)
-	DECLARE @mxStar CHAR(10)
-	DECLARE @mxGenre INT
-	DECLARE @tmp INT
-
-# stirng to int
-SET @CODE = CONVERT(SUBSTRING("SQL Tutorial", 5, 3),UNSIGNED INTEGER)
-# increment
-SET @CODE2 = @CODE + 1
-
-# int to string
-CONVERT(id, CHAR(50))
-# concat
-CONCAT (first_name,last_name)
-
-
-  if (2 < 3) then
-      select 1;
-  end if;
-  $$
-
-
-CALL addMovie('Elipsis', 2006, 'Eduardo Arias-Nath', 'Yueh', 'Yueh');
