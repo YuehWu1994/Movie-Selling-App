@@ -24,7 +24,9 @@ public class DomParser {
 	List<stars_in_movies> list_sim;
 	
 	//Cache query results.
-	Set<String> set_movies_id=new HashSet<>(); 
+	//Set<String> set_movies_id=new HashSet<>();
+	//Record inconsistency
+	Map<String, String> map_movies=new HashMap<>();
 	Map<String, Integer> map_genres=new HashMap<>();
 	Set<String> set_gim=new HashSet<>();
 	Set<String> set_stars_id=new HashSet<>();
@@ -41,7 +43,7 @@ public class DomParser {
     public void runExample() {
     	
     	try {
-    		long t1=System.currentTimeMillis()/1000;
+    		//long t1=System.currentTimeMillis()/1000;
     		
     		Class.forName("com.mysql.jdbc.Driver").newInstance();
     		/*
@@ -67,9 +69,9 @@ public class DomParser {
             //load casts124.xml
             insert_stars_in_movies(dbcon);
             
-            
+            /*
             long t2=System.currentTimeMillis()/1000;
-            System.out.println(t2-t1);
+            System.out.println(t2-t1);*/
     	}
     	catch (Exception e){
     		System.out.printf("connection error: %s", e.getMessage());
@@ -152,15 +154,15 @@ public class DomParser {
                 movie_id=movie_id.trim();
                 title=title.trim();
                 if(movie_id.length() == 0) {
-                	System.out.println("movies id is empty");
+                	//System.out.println("movies id is empty");
                 	continue;
                 }
                 if(title.length() == 0) {
-                	System.out.println("movies title is empty");
+                	//System.out.println("movies title is empty");
                 	continue;
                 }
                 if(director.length() == 0) {
-                	System.out.println("movies director is empty");
+                	//System.out.println("movies director is empty");
                 	continue;
                 }
                 
@@ -170,7 +172,7 @@ public class DomParser {
                 if(genres != null && genres.getLength() > 0) {
                 	for(int j=0; j < genres.getLength(); j++) {
                 		if(genres.item(j).getFirstChild() == null) {
-                			System.out.println("tag cat is null");
+                			//System.out.println("tag cat is null");
                 			continue;
                 		}
                 		String str_genre=genres.item(j).getFirstChild().getNodeValue();
@@ -206,11 +208,11 @@ public class DomParser {
     	last_name=last_name.trim();
 
     	if(first_name.length() == 0) {
-    		System.out.println("actors tag <firstname> is empty");
+    		//System.out.println("actors tag <firstname> is empty");
     		return null;
     	}
     	if(last_name.length() == 0) {
-    		System.out.println("actors tag <familyname> is empty");
+    		//System.out.println("actors tag <familyname> is empty");
     		return null;
     	}
     	
@@ -223,17 +225,24 @@ public class DomParser {
     	String starId=getTextValue(sim, "a");
     	if(starId == null) return null;
     	if(starId.length() == 0) {
-    		System.out.println("casts tag <a> is empty");
+    		//System.out.println("casts tag <a> is empty");
     		return null;
     	}
     	
     	String movieId=getTextValue(sim, "f");
     	if(movieId == null) return null;
     	if(movieId.length() == 0) {
-    		System.out.println("casts tag <f> is empty");
+    		//System.out.println("casts tag <f> is empty");
     		return null;
     	}
-    	return new stars_in_movies(starId, movieId);
+    	
+    	String title=getTextValue(sim, "t");
+    	if(title == null) return null;
+    	if(title.length() == 0) {
+    		//System.out.println("casts tag <f> is empty");
+    		return null;
+    	}
+    	return new stars_in_movies(starId, movieId, title);
     }
 
     /**
@@ -252,8 +261,8 @@ public class DomParser {
         if (nl != null && nl.getLength() > 0) {
             Element el = (Element) nl.item(0);
             if(el.getFirstChild() == null) {
-            	System.out.printf("tag <%s> is null", tagName);
-            	System.out.println();
+            	//System.out.printf("tag <%s> is null", tagName);
+            	//System.out.println();
             	return null;
             }
             textVal = el.getFirstChild().getNodeValue();
@@ -276,7 +285,7 @@ public class DomParser {
     		res = Integer.parseInt(getTextValue(ele, tagName));
     	}
     	catch (NumberFormatException e) {
-    		System.out.printf("Wrong Integer format: %s", getTextValue(ele, tagName));
+    		System.out.printf("inconsistent records: wrong integer format: %s", getTextValue(ele, tagName));
     		System.out.println();
     		return null;
     	}
@@ -323,21 +332,30 @@ public class DomParser {
     				ResultSet rs = null;
     				
     				//check is the movie exists.
-    				//cache the result. 
+    				//cache the result.
+    				/*
     				if(set_movies_id.contains(movie_id)) {
     					System.out.printf("movies id %s exist", movie_id);
     					System.out.println();
     					continue;
     				}
-    				set_movies_id.add(movie_id);
+    				set_movies_id.add(movie_id);*/
+    				if(map_movies.containsKey(movie_id)) {
+    					/*
+    					System.out.printf("movies id %s exist", movie_id);
+    					System.out.println();*/
+    					continue;
+    				}
+    				map_movies.put(movie_id, title);
     				
     				query = "SELECT 1 FROM movies WHERE movies.id=?";
     				insertStatement = dbcon.prepareStatement(query);
     				insertStatement.setString(1, movie_id);
     				rs=insertStatement.executeQuery();
     				if(rs.next()) {
+    					/*
     					System.out.printf("movies id %s exist", movie_id);
-    					System.out.println();
+    					System.out.println();*/
     					continue;
     				}
     				insertStatement.close();
@@ -397,8 +415,9 @@ public class DomParser {
     					rs = insertStatement.executeQuery();
     					
     					if(rs.next()) {
+    						/*
     						System.out.printf("genres %s exists", gre);
-    						System.out.println();
+    						System.out.println();*/
     						Integer genre_id=rs.getInt("id");
     						map_genres.put(gre, genre_id);
     						continue;
@@ -409,6 +428,7 @@ public class DomParser {
     					insertStatement = dbcon.prepareStatement(query);
     					insertStatement.setString(1, gre);
     					int af = insertStatement.executeUpdate();
+    					/*
     					if(af != 0) {
     						System.out.printf("Succeess: %s", insertStatement);
     						System.out.println();
@@ -416,7 +436,7 @@ public class DomParser {
     					else {
     						System.out.printf("Fail: %s", insertStatement);
     						System.out.println();
-    					}
+    					}*/
 
     					//Get genre number and record it.
     					query = "SELECT * FROM genres WHERE genres.name = ?;";
@@ -480,7 +500,9 @@ public class DomParser {
 
     					Integer genre_id=map_genres.get(gre);
     					if(genre_id == null) {
-    						System.out.printf("Genre %s doesn't exist", gre);
+    						//System.out.printf("Genre %s doesn't exist", gre);
+    						System.out.printf("inconsistent records: genre %s doesn't exist", gre);
+    						System.out.println();
     						continue;
     					}
     					
@@ -495,8 +517,9 @@ public class DomParser {
     					insertStatement.setString(2, movie_id);
     					rs = insertStatement.executeQuery();
     					if(rs.next()) {
+    						/*
     						System.out.printf("genre_id %d and movie_id %s exists", genre_id, movie_id);
-    						System.out.println();
+    						System.out.println();*/
     						continue;
     					}
     					insertStatement.close();
@@ -548,8 +571,9 @@ public class DomParser {
 				
 				//check if star's id exists. Cache the result.
 				if(set_stars_id.contains(id)) {
+					/*
 					System.out.printf("stars id %s exists", id);
-					System.out.println();
+					System.out.println();*/
 					continue;
 				}
 				set_stars_id.add(id);
@@ -559,8 +583,9 @@ public class DomParser {
 				insertStatement.setString(1, id);
 				rs = insertStatement.executeQuery();
 				if(rs.next()) {
+					/*
 					System.out.printf("star's id %s exists", id);
-					System.out.println();	
+					System.out.println();*/
 					continue;
 				}
 				insertStatement.close();
@@ -604,8 +629,10 @@ public class DomParser {
 
 				String starId=sim.starId;
 				String movieId=sim.movieId;
+				String title=sim.title;
 				
 				//check if both starId and movieId exist.
+				/*
 				query = "SELECT * FROM stars WHERE stars.id = ?;";
 				insertStatement = dbcon.prepareStatement(query);
 				insertStatement.setString(1, starId);
@@ -623,15 +650,26 @@ public class DomParser {
 					System.out.printf("movieId %s does't exist", movieId);
 					System.out.println();
 					continue;
-				}
+				}*/
+				
 				//Cache the result
 				if(!set_stars_id.contains(starId)) {
-					System.out.printf("starId %s doesn't exist", starId);
-					System.out.println();
+					/*
+					//System.out.printf("starId %s doesn't exist", starId);
+					System.out.println();*/
+					//System.out.printf("inconsistent records: starId %s doesn't exist", starId);
+					//System.out.println();
 					continue;
 				}
-				if(!set_movies_id.contains(movieId)) {
-					System.out.printf("movieId %s doesn't exist", movieId);
+				if(!map_movies.containsKey(movieId)) {
+					//System.out.printf("movieId %s doesn't exist", movieId);
+					//System.out.println();
+					//System.out.printf("inconsistent records: movieId %s doesn't exist", movieId);
+					//System.out.println();
+					continue;
+				}
+				if(!map_movies.get(movieId).equals(title)) {
+					System.out.printf("inconsistent records: movid id: %s, movie title: %s", movieId, title);
 					System.out.println();
 					continue;
 				}
@@ -646,8 +684,9 @@ public class DomParser {
 				insertStatement.setString(2, movieId);
 				rs = insertStatement.executeQuery();
 				if(rs.next()) {
+					/*
 					System.out.printf("starId %s AND movieId %s exist", starId, movieId);
-					System.out.println();
+					System.out.println();*/
 					continue;
 				}
 				insertStatement.close();
