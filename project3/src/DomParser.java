@@ -148,21 +148,40 @@ public class DomParser {
                 String movie_id=getTextValue(fm, "fid");
                 String title=getTextValue(fm, "t");
                 Integer year=getIntValue(fm, "year");
-                if(movie_id == null || title == null || year == null || director == null) continue;
+                //if(movie_id == null || title == null || year == null || director == null) continue;
+                if(movie_id == null) {
+                	System.out.println("Invalid: main.xml tag <fid> is null");
+                	continue;
+                }
+                if(title == null) {
+                	System.out.println("Invalid: main.xml tag <t> is null");
+                	continue;
+                }
+                if(year == null) {
+                	System.out.println("Invalid: main.xml tag <year> is null");
+                	continue;
+                }
+                if(director == null) {
+                	System.out.println("Invalid: main.xml tag <dirname> is null");
+                	continue;
+                }
                 
                 director=director.trim();
                 movie_id=movie_id.trim();
                 title=title.trim();
                 if(movie_id.length() == 0) {
                 	//System.out.println("movies id is empty");
+                	System.out.println("Invalid: main.xml tag <fid> is empty");
                 	continue;
                 }
                 if(title.length() == 0) {
                 	//System.out.println("movies title is empty");
+                	System.out.println("Invalid: main.xml tag <t> is empty");
                 	continue;
                 }
                 if(director.length() == 0) {
                 	//System.out.println("movies director is empty");
+                	System.out.println("Invalid: main.xml tag <dirname> is empty");
                 	continue;
                 }
                 
@@ -199,20 +218,23 @@ public class DomParser {
     	String first_name=getTextValue(acs, "firstname");
     	String last_name=getTextValue(acs, "familyname");
     	if(first_name == null) {
+    		System.out.println("Invalid: actors.xml tag <firstname> is null");
     		return null;
     	}
     	if(last_name == null) {
+    		System.out.println("Invalid: actors.xml tag <familyname> is null");
     		return null;
     	}
     	first_name=first_name.trim();
     	last_name=last_name.trim();
 
     	if(first_name.length() == 0) {
-    		//System.out.println("actors tag <firstname> is empty");
+    		System.out.println("Invalid: actors.xml tag <firstname> is empty");
     		return null;
     	}
     	if(last_name.length() == 0) {
     		//System.out.println("actors tag <familyname> is empty");
+    		System.out.println("Invalid: actors.xml tag <familyname> is empty");
     		return null;
     	}
     	
@@ -225,21 +247,21 @@ public class DomParser {
     	String starId=getTextValue(sim, "a");
     	if(starId == null) return null;
     	if(starId.length() == 0) {
-    		//System.out.println("casts tag <a> is empty");
+    		System.out.println("Invalid: casts.xml tag <a> is empty");
     		return null;
     	}
     	
     	String movieId=getTextValue(sim, "f");
     	if(movieId == null) return null;
     	if(movieId.length() == 0) {
-    		//System.out.println("casts tag <f> is empty");
+    		System.out.println("Invalid: casts.xml tag <f> is empty");
     		return null;
     	}
     	
     	String title=getTextValue(sim, "t");
     	if(title == null) return null;
     	if(title.length() == 0) {
-    		//System.out.println("casts tag <f> is empty");
+    		System.out.println("Invalid: casts.xml tag <t> is empty");
     		return null;
     	}
     	return new stars_in_movies(starId, movieId, title);
@@ -261,8 +283,9 @@ public class DomParser {
         if (nl != null && nl.getLength() > 0) {
             Element el = (Element) nl.item(0);
             if(el.getFirstChild() == null) {
-            	//System.out.printf("tag <%s> is null", tagName);
-            	//System.out.println();
+            	/*
+            	System.out.printf("Invalid: tag <%s> is null", tagName);
+            	System.out.println();*/
             	return null;
             }
             textVal = el.getFirstChild().getNodeValue();
@@ -285,7 +308,8 @@ public class DomParser {
     		res = Integer.parseInt(getTextValue(ele, tagName));
     	}
     	catch (NumberFormatException e) {
-    		System.out.printf("inconsistent records: wrong integer format: %s", getTextValue(ele, tagName));
+    		//System.out.printf("Invalid: wrong integer format %s", getTextValue(ele, tagName));
+    		System.out.printf("Invalid: wrong integer fomrat: tag <%s> : %s", tagName, getTextValue(ele, tagName));
     		System.out.println();
     		return null;
     	}
@@ -659,6 +683,8 @@ public class DomParser {
 					System.out.println();*/
 					//System.out.printf("inconsistent records: starId %s doesn't exist", starId);
 					//System.out.println();
+					System.out.printf("inconsistent records: casts.xml tag<a>: %s", starId);
+					System.out.println();
 					continue;
 				}
 				if(!map_movies.containsKey(movieId)) {
@@ -666,10 +692,15 @@ public class DomParser {
 					//System.out.println();
 					//System.out.printf("inconsistent records: movieId %s doesn't exist", movieId);
 					//System.out.println();
+					System.out.printf("inconsistent records: casts.xml tag<f>: %s", movieId);
+					System.out.println();
 					continue;
 				}
 				if(!map_movies.get(movieId).equals(title)) {
+					/*
 					System.out.printf("inconsistent records: movid id: %s, movie title: %s", movieId, title);
+					System.out.println();*/
+					System.out.printf("inconsistent records: casts.xml tag<f>: %s, tag<t>: %s", movieId, title);
 					System.out.println();
 					continue;
 				}
