@@ -6,7 +6,9 @@ CREATE TABLE movies (
     id VARCHAR(10) PRIMARY KEY NOT NULL,
     title VARCHAR(100) DEFAULT '',
     year INT NOT NULL,
-    director VARCHAR(100) DEFAULT ''
+    director VARCHAR(100) DEFAULT '',
+    # for full-text search.
+    FULLTEXT (title)
 );
 CREATE TABLE stars (
     id VARCHAR(100) PRIMARY KEY NOT NULL,
