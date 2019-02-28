@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="450px"
+    android:background="@color/highlighted_text_material_dark"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10px"
+        android:text="Peter Anteater"
+        android:textColor="@color/primary_text_default_material_light"
+        android:textSize="55px" />
+
+    <TextView
+        android:id="@+id/castyear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10px"
+        android:text="1965"
+        android:textColor="@color/primary_text_default_material_light" />
+
+    <TextView
+        android:id="@+id/director"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5px"
+        android:text="director"
+        android:textColor="@color/primary_text_default_material_light" />
+
+    <TextView
+        android:id="@+id/genres"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5px"
+        android:text="Genres"
+        android:textColor="@color/primary_text_default_material_light" />
+
+    <TextView
+        android:id="@+id/stars"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:padding="5px"
+        android:text="Stars"
+        android:textColor="@color/primary_text_default_material_light" />
+
+</LinearLayout>

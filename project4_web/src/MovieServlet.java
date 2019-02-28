@@ -71,24 +71,20 @@ public class MovieServlet extends HttpServlet {
         }
         //Advanced search.
         else {
-        	/*
-            if(Title != "") {
-            	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.title like ?";
-            	//Full Text Search
-            }
-            else if(Year != "") {
-            	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.year like ?";
-            }
-            else if(Director != "") {
-            	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.director like ?";
-            }
-            
-            else if(Star_name != "") {
-            	searchStr= "SELECT q.id, q.title, q.year, q.director, q.rating FROM ("+baseSelect+") q JOIN `stars_in_movies` sim ON q.id=sim.movieId JOIN `stars` s ON s.id=sim.starId WHERE s.name like ?";
-            }*/
         	searchStr=baseSelect;
         	if(!Title.equals("") && !Title.equals("null")) {
-            	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
+        		//Fuzzy Search
+        		/*
+        		if(!Title.contains(" ")) {
+        			int fuzzy_thres = (Title.length()-1)/5;
+        			searchStr= "SELECT * FROM ("+searchStr+") q WHERE (SELECT edrec(?, q.title, " + Integer.toString(fuzzy_thres) + ") = 1)";
+        		}
+        		//Original Method
+        		else {
+            	    searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
+        		}*/
+        		searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
+        		
             	//Full Text Search
         		//searchStr="SELECT * FROM movies WHERE MATCH (title) AGAINST (?)";
             }
@@ -124,7 +120,6 @@ public class MovieServlet extends HttpServlet {
         searchStr="SELECT * FROM "+"("+searchStr+") AS n LIMIT ? OFFSET ?"; 
         System.out.println("Search result");
         System.out.println(searchStr);
-//        System.out.println(qSize);
         try {
             // Get a connection from dataSource
             Connection dbcon = dataSource.getConnection();
@@ -151,35 +146,20 @@ public class MovieServlet extends HttpServlet {
             
             //Advanced search.
             else {
-            	/*
-                if(Title != "") {
-                	searchStatement.setString(1, "%" + Title + "%");
-                	sizeStatement.setString(1, "%" + Title + "%");
-                }
-                else if(Year != "") {
-                	searchStatement.setString(1, "%" + Year + "%");
-                	sizeStatement.setString(1, "%" + Year + "%");
-                }
-                else if(Director != "") {
-                	searchStatement.setString(1, "%" + Director + "%");
-                	sizeStatement.setString(1, "%" + Director + "%");
-                }
-                else if(Star_name != "") {
-                	searchStatement.setString(1, "%" + Star_name + "%");
-                	sizeStatement.setString(1, "%" + Star_name + "%");
-                }*/
-            	
             	if(!Title.equals("") && !Title.equals("null")) {
-            		
-                	searchStatement.setString(cnt, "%" + Title + "%");
-                	sizeStatement.setString(cnt, "%" + Title + "%");
+            		//Fuzzy search
             		/*
-            		String q="";
-            		for(int i=0; i<title_arr.length; i++) {
-            			q+=(title_arr[i]+"* ");
+            		if(!Title.contains(" ")) {
+            			searchStatement.setString(cnt, Title.toLowerCase( ));
+                    	sizeStatement.setString(cnt, Title.toLowerCase( )); 
             		}
-            		searchStatement.setString(cnt, q);
-            		sizeStatement.setString(cnt, q);*/
+            		//Original method
+            		else {
+            			searchStatement.setString(cnt, "%" + Title + "%");
+                    	sizeStatement.setString(cnt, "%" + Title + "%");
+            		}*/
+            		searchStatement.setString(cnt, "%" + Title + "%");
+            		sizeStatement.setString(cnt, "%" + Title + "%");
                 	cnt++;
                 }
 
