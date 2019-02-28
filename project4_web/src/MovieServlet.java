@@ -39,7 +39,7 @@ public class MovieServlet extends HttpServlet {
         String Director = request.getParameter("Director");
         String Star_name = request.getParameter("Star_name");
         String sort = request.getParameter("sort");
-
+        
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
         
@@ -70,8 +70,10 @@ public class MovieServlet extends HttpServlet {
         }
         //Advanced search.
         else {
+        	/*
             if(Title != "") {
             	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.title like ?";
+            	//Full Text Search
             }
             else if(Year != "") {
             	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.year like ?";
@@ -82,6 +84,22 @@ public class MovieServlet extends HttpServlet {
             
             else if(Star_name != "") {
             	searchStr= "SELECT q.id, q.title, q.year, q.director, q.rating FROM ("+baseSelect+") q JOIN `stars_in_movies` sim ON q.id=sim.movieId JOIN `stars` s ON s.id=sim.starId WHERE s.name like ?";
+            }*/
+        	searchStr=baseSelect;
+        	if(!Title.equals("") && !Title.equals("null")) {
+            	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
+            	//Full Text Search
+            }
+            if(!Year.equals("") && !Year.equals("null")) {
+            	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.year like ?";
+            }
+            if(!Director.equals("") && !Director.equals("null")) {
+            	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.director like ?";
+            }
+            if(!Star_name.equals("") && !Star_name.equals("null")) {
+            	System.out.println("Star name");
+            	System.out.println(Star_name);
+            	searchStr= "SELECT q.id, q.title, q.year, q.director, q.rating FROM ("+searchStr+") q JOIN `stars_in_movies` sim ON q.id=sim.movieId JOIN `stars` s ON s.id=sim.starId WHERE s.name like ?";
             }
         }
         
@@ -101,8 +119,9 @@ public class MovieServlet extends HttpServlet {
         	searchStr="SELECT * FROM "+"("+searchStr+") AS n ORDER BY n.rating ASC";
         }
         
-        searchStr="SELECT * FROM "+"("+searchStr+") AS n LIMIT ? OFFSET ?";        
-//        System.out.println(searchStr);
+        searchStr="SELECT * FROM "+"("+searchStr+") AS n LIMIT ? OFFSET ?"; 
+        System.out.println("Search result");
+        System.out.println(searchStr);
 //        System.out.println(qSize);
         try {
             // Get a connection from dataSource
@@ -112,8 +131,10 @@ public class MovieServlet extends HttpServlet {
             searchStatement = dbcon.prepareStatement(searchStr);            
             sizeStatement = dbcon.prepareStatement(qSize);
             
+            
             // Prepare the statement
             //Search by genre.
+            int cnt=1; // Count the number of advanced search.
             if(genre.length() > 1) {
             	searchStatement.setString(1, genre);
             	sizeStatement.setString(1, genre);
@@ -123,8 +144,10 @@ public class MovieServlet extends HttpServlet {
             	searchStatement.setString(1, Character.toString(genre.charAt(0)) + "%");
             	sizeStatement.setString(1, Character.toString(genre.charAt(0)) + "%");
             }
+            
             //Advanced search.
             else {
+            	/*
                 if(Title != "") {
                 	searchStatement.setString(1, "%" + Title + "%");
                 	sizeStatement.setString(1, "%" + Title + "%");
@@ -140,9 +163,37 @@ public class MovieServlet extends HttpServlet {
                 else if(Star_name != "") {
                 	searchStatement.setString(1, "%" + Star_name + "%");
                 	sizeStatement.setString(1, "%" + Star_name + "%");
+                }*/
+            	
+            	if(!Title.equals("") && !Title.equals("null")) {
+            		//System.out.println("not empty cnt");
+                	searchStatement.setString(cnt, "%" + Title + "%");
+                	sizeStatement.setString(cnt, "%" + Title + "%");
+                	cnt++;
                 }
+
+                if(!Year.equals("") && !Year.equals("null")) {
+                	//System.out.println("process year");
+                	searchStatement.setString(cnt, "%" + Year + "%");
+                	sizeStatement.setString(cnt, "%" + Year + "%");
+                	cnt++;
+                }
+
+                if(!Director.equals("") && !Director.equals("null")) {
+                	searchStatement.setString(cnt, "%" + Director + "%");
+                	sizeStatement.setString(cnt, "%" + Director + "%");
+                	cnt++;
+                }
+
+                if(!Star_name.equals("") && !Star_name.equals("null")) {
+                	searchStatement.setString(cnt, "%" + Star_name + "%");
+                	sizeStatement.setString(cnt, "%" + Star_name + "%");
+                	cnt++;
+                }
+                
             }
-           
+            System.out.println("search statement");
+            System.out.println(searchStatement);
             
             // Count total number of movies.
             ResultSet rsP = sizeStatement.executeQuery();
@@ -161,18 +212,24 @@ public class MovieServlet extends HttpServlet {
             // set limit and offset
             	// if offset is negative, show all result
             if(offset < 0) {
-            	System.out.println("hello");
+            	/*
             	searchStatement.setInt(2, Integer.parseInt(movieSize));
-            	searchStatement.setInt(3, 0);
+            	searchStatement.setInt(3, 0);*/
+            	searchStatement.setInt(cnt++, Integer.parseInt(movieSize));
+            	searchStatement.setInt(cnt++, 0);
             }
-            else {
+            else {/*
                 searchStatement.setInt(2, numRecord);
-                searchStatement.setInt(3, offset);           	
+                searchStatement.setInt(3, offset);*/
+            	searchStatement.setInt(cnt++, numRecord);
+                searchStatement.setInt(cnt++, offset);
             }
             
             // Perform the query
+            System.out.println("execution query");
             ResultSet rs = searchStatement.executeQuery();
             dbcon.commit();
+            System.out.println("execution query");
             
             // prepare string
             PreparedStatement genreStatement = null;
@@ -190,6 +247,8 @@ public class MovieServlet extends HttpServlet {
             	String stars_name = "";
             	String stars_id = "";
             	String movie_rating = rs.getString("rating");
+            	
+            	//System.out.println(movie_id);
             	
             	//Query list of genres.
             	genreStatement = dbcon.prepareStatement(genStr);

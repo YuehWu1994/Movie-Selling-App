@@ -78,7 +78,10 @@ function handleStarResult(resultData) {
         //rowHTML += "<th>" + resultData[i]["genreList"] + "</th>";
         
         //For genres list
-        let genreList=resultData[i]["genreList"].split(",");
+        let genreList=[];
+        if(resultData[i]["genreList"] != null){
+        	genreList=resultData[i]["genreList"].split(",");
+        }
         rowHTML += "<th>";
         for(let j=0; j<genreList.length; j++){
         	rowHTML+=('<a href="index.html?p='+currentPage+'&numRecord='+recordNum+'&genre='+ genreList[j] + '">'
