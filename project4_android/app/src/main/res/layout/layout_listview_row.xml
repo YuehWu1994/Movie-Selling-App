@@ -3,17 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="450px"
-    android:background="@android:color/holo_blue_light"
+    android:background="@color/highlighted_text_material_dark"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="231dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10px"
         android:text="Peter Anteater"
-        android:textColor="@android:color/white"
-        android:textSize="40px" />
+        android:textColor="@color/primary_text_default_material_light"
+        android:textSize="55px" />
 
     <TextView
         android:id="@+id/castyear"
@@ -21,24 +21,30 @@
         android:layout_height="wrap_content"
         android:padding="10px"
         android:text="1965"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/primary_text_default_material_light" />
 
     <TextView
         android:id="@+id/director"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Yueh" />
+        android:padding="5px"
+        android:text="director"
+        android:textColor="@color/primary_text_default_material_light" />
 
     <TextView
         android:id="@+id/genres"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Genres" />
+        android:padding="5px"
+        android:text="Genres"
+        android:textColor="@color/primary_text_default_material_light" />
 
     <TextView
         android:id="@+id/stars"
         android:layout_width="match_parent"
-        android:layout_height="78dp"
-        android:text="Stars" />
+        android:layout_height="60dp"
+        android:padding="5px"
+        android:text="Stars"
+        android:textColor="@color/primary_text_default_material_light" />
 
 </LinearLayout>

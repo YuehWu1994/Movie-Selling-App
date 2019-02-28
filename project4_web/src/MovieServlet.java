@@ -71,7 +71,16 @@ public class MovieServlet extends HttpServlet {
         //Advanced search.
         else {
             if(Title != "") {
-            	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.title like ?";
+            	// original version
+            	//searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.title like ?";
+            	// If there is no space, use Fuzzy Search, otherwise, apply original method
+            	if(!Title.contains(" ")) {
+                	int fuzzy_thres = (Title.length()-1)/5;
+                	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE (SELECT edrec(?, q.title, " + Integer.toString(fuzzy_thres) + ") = 1)";           		
+            	}
+            	else searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.title like ?";
+
+
             }
             else if(Year != "") {
             	searchStr= "SELECT * FROM ("+baseSelect+") q WHERE q.year like ?";
@@ -126,8 +135,19 @@ public class MovieServlet extends HttpServlet {
             //Advanced search.
             else {
                 if(Title != "") {
-                	searchStatement.setString(1, "%" + Title + "%");
-                	sizeStatement.setString(1, "%" + Title + "%");
+                	// original version
+//                	searchStatement.setString(1, "%" + Title + "%");
+//                	sizeStatement.setString(1, "%" + Title + "%");
+                	
+                	// If there is no space, use Fuzzy Search, otherwise, apply original method
+                	if(!Title.contains(" ")) {
+                    	searchStatement.setString(1, Title.toLowerCase( ));
+                    	sizeStatement.setString(1, Title.toLowerCase( ));               		
+                	}
+                	else {
+                    	searchStatement.setString(1, "%" + Title + "%");
+                    	sizeStatement.setString(1, "%" + Title + "%");                		
+                	}
                 }
                 else if(Year != "") {
                 	searchStatement.setString(1, "%" + Year + "%");

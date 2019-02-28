@@ -7,21 +7,20 @@
     <TextView
         android:id="@+id/pageText"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_green_light"
+        android:layout_height="50dp"
+        android:background="@color/Orange"
         android:gravity="center"
         android:padding="6dp"
         android:textColor="@android:color/black"
-        android:textSize="18sp" />
+        android:textSize="25sp" />
 
     <ListView
         android:id="@+id/list"
-        android:divider="#000"
-        android:dividerHeight="1dp"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_height="550dp"
         android:layout_weight="1"
-        />
+        android:divider="#000"
+        android:dividerHeight="1dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,13 +32,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/holo_green_light"
+            android:background="@color/Orange"
             android:text="Prev"
             android:textSize="24sp" />
 
         <View
             android:id="@+id/view3"
-            android:layout_width="9dp"
+            android:layout_width="11dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
@@ -48,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/holo_green_light"
+            android:background="@color/Orange"
             android:text="Next"
             android:textSize="24sp" />
 

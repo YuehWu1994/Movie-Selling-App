@@ -27,6 +27,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -73,13 +75,21 @@ public class LoginActivity extends ActionBarActivity {
                     @Override
                     public void onResponse(String response) {
                         //((TextView) findViewById(R.id.http_response)).setText(response);
+                        try {
 
-                        String msg = ((TextView) findViewById(R.id.http_response)).getText().toString();
-                        if(response.contains("success")){
-                            Intent goToIntent = new Intent(getApplicationContext(), SearchActivity.class);
-                            startActivity(goToIntent);
+                            JSONObject jsonobject = new JSONObject(response);
+                            String msg = jsonobject.getString("message");
+                            // ((TextView) findViewById(R.id.http_response)).getText().toString();
+                            if(response.contains("success")){
+                                Intent goToIntent = new Intent(getApplicationContext(), SearchActivity.class);
+                                startActivity(goToIntent);
+                            }
+                            else ((TextView) findViewById(R.id.http_response)).setText(msg);
+
+
+                        } catch (Throwable t) {
+                            Log.e("My App", "Could not parse malformed JSON");
                         }
-                        else ((TextView) findViewById(R.id.http_response)).setText(response);
 
                     }
                 },

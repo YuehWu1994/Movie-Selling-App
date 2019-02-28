@@ -29,38 +29,15 @@ public class SearchActivity extends ActionBarActivity {
         setContentView(R.layout.search);
     }
 
-
     public void searchMovie(View view) {
         String title = ((EditText) findViewById(R.id.title_input)).getText().toString();
-        Intent goToIntent = new Intent(this, ListViewActivity.class);
-        goToIntent.putExtra("title", title);
-        startActivity(goToIntent);
+        if(title.isEmpty()){
+            ((EditText) findViewById(R.id.title_input)).setError( "Title is required!" );
+        }
+        else{
+            Intent goToIntent = new Intent(this, ListViewActivity.class);
+            goToIntent.putExtra("title", title);
+            startActivity(goToIntent);
+        }
     }
 }
-
-
-//
-//    final RequestQueue queue = NetworkManager.sharedManager(this).queue;
-//    // init url
-//    String title = ((EditText) findViewById(R.id.title_input)).getText().toString();
-//    String url = IpAddress.ip+"project4/api/movies?p=0&numRecord=15&genre=&Title=" + title + "&Year=&Director=&Star_name=&sort=ASC";
-//
-//    final StringRequest loginRequest = new StringRequest(Request.Method.GET, url,
-//            new Response.Listener<String>() {
-//                @Override
-//                public void onResponse(String response) {
-//                    Log.d("response", response);
-//
-//                }
-//            },
-//            new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    // error
-//                    Log.d("login.error", error.toString());
-//                }
-//            }
-//    );
-//
-//// !important: queue.add is where the login request is actually sent
-//        queue.add(loginRequest);

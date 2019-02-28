@@ -4,7 +4,8 @@
 
     <color name="red">#CC0000</color>
     <color name="blue">#0080FF</color>
-    <color name="green">#80FF00</color>
+    <color name="green">#FF3764</color>
+    <color name="Orange">#F58231</color>
 
     <string name="login_page">Login Page</string>
     <string name="title_search_movie"> Search Movie </string>
