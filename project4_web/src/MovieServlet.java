@@ -73,21 +73,25 @@ public class MovieServlet extends HttpServlet {
         else {
         	searchStr=baseSelect;
         	if(!Title.equals("") && !Title.equals("null")) {
-        		//Fuzzy Search
-        		/*
-        		if(!Title.contains(" ")) {
-        			int fuzzy_thres = (Title.length()-1)/5;
-        			searchStr= "SELECT * FROM ("+searchStr+") q WHERE (SELECT edrec(?, q.title, " + Integer.toString(fuzzy_thres) + ") = 1)";
-        		}
-        		//Original Method
-        		else {
-            	    searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
-        		}*/
-        		
         		//searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
         		
             	//Full Text Search
         		searchStr="SELECT * FROM ("+searchStr+") q WHERE MATCH (q.title) AGAINST (? IN BOOLEAN MODE)";
+        		//Fuzzy Search
+//        		if(!Title.contains(" ")) {
+//        			int fuzzy_thres = (Title.length()-1)/5;
+//        			searchStr += "or (SELECT edrec(?, q.title, " + Integer.toString(fuzzy_thres) + ") = 1)";
+//        		}
+        		
+        		// apply Fuzzy token by token
+        		String q= " or(";
+        		for(int i = 0; i < title_arr.length; ++i) {
+        			if(i != 0) q += " and ";
+        			int fuzzy_thres = (title_arr[i].length()-1)/5;
+        			q+= "(SELECT edrec('" + title_arr[i].toLowerCase() +"', q.title, " + Integer.toString(fuzzy_thres) + ")= 1)";
+        		}
+        		q += ")";
+        		searchStr += q;
             }
             if(!Year.equals("") && !Year.equals("null")) {
             	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.year like ?";
@@ -148,17 +152,7 @@ public class MovieServlet extends HttpServlet {
             //Advanced search.
             else {
             	if(!Title.equals("") && !Title.equals("null")) {
-            		//Fuzzy search
-            		/*
-            		if(!Title.contains(" ")) {
-            			searchStatement.setString(cnt, Title.toLowerCase( ));
-                    	sizeStatement.setString(cnt, Title.toLowerCase( )); 
-            		}
-            		//Original method
-            		else {
-            			searchStatement.setString(cnt, "%" + Title + "%");
-                    	sizeStatement.setString(cnt, "%" + Title + "%");
-            		}*/
+
             		/*
             		searchStatement.setString(cnt, "%" + Title + "%");
             		sizeStatement.setString(cnt, "%" + Title + "%");*/
@@ -171,6 +165,7 @@ public class MovieServlet extends HttpServlet {
             		searchStatement.setString(cnt, q);
             		sizeStatement.setString(cnt, q);
                 	cnt++;
+                	
                 }
 
                 if(!Year.equals("") && !Year.equals("null")) {
