@@ -83,10 +83,11 @@ public class MovieServlet extends HttpServlet {
         		else {
             	    searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
         		}*/
-        		searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
+        		
+        		//searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
         		
             	//Full Text Search
-        		//searchStr="SELECT * FROM movies WHERE MATCH (title) AGAINST (?)";
+        		searchStr="SELECT * FROM ("+searchStr+") q WHERE MATCH (q.title) AGAINST (? IN BOOLEAN MODE)";
             }
             if(!Year.equals("") && !Year.equals("null")) {
             	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.year like ?";
@@ -158,8 +159,17 @@ public class MovieServlet extends HttpServlet {
             			searchStatement.setString(cnt, "%" + Title + "%");
                     	sizeStatement.setString(cnt, "%" + Title + "%");
             		}*/
+            		/*
             		searchStatement.setString(cnt, "%" + Title + "%");
-            		sizeStatement.setString(cnt, "%" + Title + "%");
+            		sizeStatement.setString(cnt, "%" + Title + "%");*/
+            		
+            		//Full text search
+            		String q="";
+            		for(String s : title_arr) {
+            			q+=("+"+s+"* ");
+            		}
+            		searchStatement.setString(cnt, q);
+            		sizeStatement.setString(cnt, q);
                 	cnt++;
                 }
 
@@ -221,13 +231,12 @@ public class MovieServlet extends HttpServlet {
             System.out.println(searchStatement);
             ResultSet rs = searchStatement.executeQuery();
             dbcon.commit();
-            
+            System.out.println("finished");
             // prepare string
             PreparedStatement genreStatement = null;
             String genStr = "SELECT GROUP_CONCAT(g.name) AS genreList FROM  `genres` g JOIN `genres_in_movies` gm ON gm.genreId = g.id AND gm.movieId =?";
             PreparedStatement starStatement = null;
             String starStr = "SELECT * from movies as m, stars_in_movies as sim, stars as s where m.id =? and s.id = sim.starId and m.id = sim.movieId";
-            
             
             // Iterate through each row of rs
             while (rs.next()) {         	
