@@ -35,6 +35,7 @@ public class MovieServlet extends HttpServlet {
         // Get genre from url.
         String genre = request.getParameter("genre");
         String Title = request.getParameter("Title");
+        String[] title_arr=Title.split(" ");
         String Year = request.getParameter("Year");
         String Director = request.getParameter("Director");
         String Star_name = request.getParameter("Star_name");
@@ -89,6 +90,7 @@ public class MovieServlet extends HttpServlet {
         	if(!Title.equals("") && !Title.equals("null")) {
             	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
             	//Full Text Search
+        		//searchStr="SELECT * FROM movies WHERE MATCH (title) AGAINST (?)";
             }
             if(!Year.equals("") && !Year.equals("null")) {
             	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.year like ?";
@@ -136,13 +138,15 @@ public class MovieServlet extends HttpServlet {
             //Search by genre.
             int cnt=1; // Count the number of advanced search.
             if(genre.length() > 1) {
-            	searchStatement.setString(1, genre);
-            	sizeStatement.setString(1, genre);
+            	searchStatement.setString(cnt, genre);
+            	sizeStatement.setString(cnt, genre);
+            	cnt++;
             }
             //Search by firt character.
             else if(genre.length() == 1) {
-            	searchStatement.setString(1, Character.toString(genre.charAt(0)) + "%");
-            	sizeStatement.setString(1, Character.toString(genre.charAt(0)) + "%");
+            	searchStatement.setString(cnt, Character.toString(genre.charAt(0)) + "%");
+            	sizeStatement.setString(cnt, Character.toString(genre.charAt(0)) + "%");
+            	cnt++;
             }
             
             //Advanced search.
@@ -166,9 +170,16 @@ public class MovieServlet extends HttpServlet {
                 }*/
             	
             	if(!Title.equals("") && !Title.equals("null")) {
-            		//System.out.println("not empty cnt");
+            		
                 	searchStatement.setString(cnt, "%" + Title + "%");
                 	sizeStatement.setString(cnt, "%" + Title + "%");
+            		/*
+            		String q="";
+            		for(int i=0; i<title_arr.length; i++) {
+            			q+=(title_arr[i]+"* ");
+            		}
+            		searchStatement.setString(cnt, q);
+            		sizeStatement.setString(cnt, q);*/
                 	cnt++;
                 }
 
@@ -210,7 +221,7 @@ public class MovieServlet extends HttpServlet {
             jsonArray.add(jsonObjSz);
             
             // set limit and offset
-            	// if offset is negative, show all result
+            // if offset is negative, show all result
             if(offset < 0) {
             	/*
             	searchStatement.setInt(2, Integer.parseInt(movieSize));
@@ -226,16 +237,17 @@ public class MovieServlet extends HttpServlet {
             }
             
             // Perform the query
-            System.out.println("execution query");
+            System.out.println("execute query");
+            System.out.println(searchStatement);
             ResultSet rs = searchStatement.executeQuery();
             dbcon.commit();
-            System.out.println("execution query");
             
             // prepare string
             PreparedStatement genreStatement = null;
             String genStr = "SELECT GROUP_CONCAT(g.name) AS genreList FROM  `genres` g JOIN `genres_in_movies` gm ON gm.genreId = g.id AND gm.movieId =?";
             PreparedStatement starStatement = null;
             String starStr = "SELECT * from movies as m, stars_in_movies as sim, stars as s where m.id =? and s.id = sim.starId and m.id = sim.movieId";
+            
             
             // Iterate through each row of rs
             while (rs.next()) {         	
@@ -248,7 +260,7 @@ public class MovieServlet extends HttpServlet {
             	String stars_id = "";
             	String movie_rating = rs.getString("rating");
             	
-            	//System.out.println(movie_id);
+            	System.out.println(movie_title);
             	
             	//Query list of genres.
             	genreStatement = dbcon.prepareStatement(genStr);
