@@ -21,8 +21,10 @@ sudo launchctl unload -F /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plis
 sudo launchctl load -F /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist 
 
 
-# d. test (the terminal asks me to input password for both for my computer account and root, the first doesn't exist and the second works)
-make test cat ed.sql edth.sql edrec.sql | mysql --database=mysql --password --user=root 
+# d. test 
+cat ed.sql edth.sql edrec.sql | mysql --database=mysql --password --user=root 
+
+
 
 
 ######## Install the Flamingo Toolkit on "my" AWS instance    #############
@@ -45,12 +47,16 @@ sudo apt-get install gcc make mysql-server libmysqlclient-dev
 # e. change to directory of source code 
 cd toolkit/src/udf/mysql/ed
 
-
-
+# f. make
 make
-gcc -Wall -O3 -I/usr/include/mysql -shared -o libed.so ed.c 
-gcc -Wall -O3 -I/usr/include/mysql -shared -o libedth.so edth.c 
-gcc -Wall -O3 -I/usr/include/mysql -shared -o libedrec.so edrec.c
 
+# g. copy the link file into mysql plugin directory
+sudo cp libed*.so /usr/lib/mysql/plugin/
+
+# h. restart mysql
+sudo /etc/init.d/mysql restart
+
+# i. test
+cat ed.sql edth.sql edrec.sql | mysql --database=mysql --password --user=root 
 
 
