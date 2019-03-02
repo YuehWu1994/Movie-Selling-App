@@ -46,34 +46,53 @@ public class MainServlet extends HttpServlet {
             // Get a connection from dataSource
             Connection dbcon = dataSource.getConnection();
             dbcon.setAutoCommit(false);
-            // Declare our statement
-            //Statement statement = dbcon.createStatement();
 
-            
-            
-         // prepare string and statement
+            // prepare string and statement
     		PreparedStatement genreStatement = null;
             String genreStr = "SELECT * from genres";
             
             dbcon.setAutoCommit(false);
             genreStatement = dbcon.prepareStatement(genreStr);
             
-            // Perform the query
+            // execute the query for genres
             ResultSet rs = genreStatement.executeQuery();
+            dbcon.commit();
             
             JsonArray jsonArray = new JsonArray();
             
+            // get genres
             while(rs.next()) {
             	String genre_name=rs.getString("name");
             	JsonObject jsonObject = new JsonObject();
             	jsonObject.addProperty("genre_name", genre_name);
             	jsonArray.add(jsonObject);
             }
+            
+            // get movie title infomration
+            String query = request.getParameter("query");
+            
+            if (query != null && !query.trim().isEmpty()) {
+            	// get movies
+                PreparedStatement moviesStatement = null;
+                String query_movies = "SELECT * from movies";
+                moviesStatement = dbcon.prepareStatement(query_movies);
+                rs = moviesStatement.executeQuery();
+                dbcon.commit();
+                while(rs.next()) {
+                	String movie_title=rs.getString("title");
+                	String movie_id=rs.getString("id");
+                	if(movie_title.toLowerCase().contains(query.toLowerCase())) {
+                		jsonArray.add(generate_movie_obj(movie_id, movie_title));
+                	}
+                }
+         	}
+            
             out.write(jsonArray.toString());
             response.setStatus(200);
             rs.close();
             genreStatement.close();
             dbcon.close();
+            
 		} catch (Exception e) {
 			// write error message JSON object to output
 			JsonObject jsonObject = new JsonObject();
@@ -84,6 +103,25 @@ public class MainServlet extends HttpServlet {
 			response.setStatus(500);
         }
 		out.close();
+	}
+	
+	/*
+	 * Generate the JSON Object from hero to be like this format:
+	 * {
+	 *   "value": "Iron Man",
+	 *   "data": { "movie_id": "11" }
+	 * }
+	 * 
+	 */
+	private static JsonObject generate_movie_obj(String movie_id, String movieName) {
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("value", movieName);
+		
+		JsonObject additionalDataJsonObject = new JsonObject();
+		additionalDataJsonObject.addProperty("movie_id", movie_id);
+		
+		jsonObject.add("data", additionalDataJsonObject);
+		return jsonObject;
 	}
 
 	/**

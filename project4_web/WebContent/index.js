@@ -90,7 +90,8 @@ function handleStarResult(resultData) {
         	);
         	rowHTML+= ",";
         }
-        rowHTML = rowHTML.substring(0, rowHTML.length-1);
+        //rowHTML = rowHTML.substring(0, rowHTML.length-1);
+        //rowHTML +="null";
         rowHTML += "</th>";
         
         //For stars list
@@ -104,10 +105,13 @@ function handleStarResult(resultData) {
         	);
         	rowHTML+= ",";
         }
-        rowHTML = rowHTML.substring(0, rowHTML.length-1);
+        //rowHTML = rowHTML.substring(0, rowHTML.length-1);
         rowHTML += "</th>";
         
-        rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
+        //For rating
+        rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";    
+        
+        //For add cart
         rowHTML += "<th><a class='btn btn-outline-primary' href='shoppingCart.html?movie=" + resultData[i]["movie_title"] + "'" + "role='button'>Add Cart</a></th>"
         rowHTML += "</tr>";
 

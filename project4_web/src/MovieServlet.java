@@ -73,17 +73,11 @@ public class MovieServlet extends HttpServlet {
         else {
         	searchStr=baseSelect;
         	if(!Title.equals("") && !Title.equals("null")) {
-        		//searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.title like ?";
-        		
             	//Full Text Search
         		searchStr="SELECT * FROM ("+searchStr+") q WHERE MATCH (q.title) AGAINST (? IN BOOLEAN MODE)";
-        		//Fuzzy Search
-//        		if(!Title.contains(" ")) {
-//        			int fuzzy_thres = (Title.length()-1)/5;
-//        			searchStr += "or (SELECT edrec(?, q.title, " + Integer.toString(fuzzy_thres) + ") = 1)";
-//        		}
         		
         		// apply Fuzzy token by token
+        		/*
         		String q= " or(";
         		for(int i = 0; i < title_arr.length; ++i) {
         			if(i != 0) q += " and ";
@@ -91,7 +85,7 @@ public class MovieServlet extends HttpServlet {
         			q+= "(SELECT edrec('" + title_arr[i].toLowerCase() +"', q.title, " + Integer.toString(fuzzy_thres) + ")= 1)";
         		}
         		q += ")";
-        		searchStr += q;
+        		searchStr += q;*/
             }
             if(!Year.equals("") && !Year.equals("null")) {
             	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.year like ?";
@@ -161,6 +155,7 @@ public class MovieServlet extends HttpServlet {
             		String q="";
             		for(String s : title_arr) {
             			q+=("+"+s+"* ");
+            			//q+=(s+"* ");
             		}
             		searchStatement.setString(cnt, q);
             		sizeStatement.setString(cnt, q);
