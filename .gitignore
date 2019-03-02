@@ -9,6 +9,8 @@ tmp/
 *.tmp
 *.bak
 *.swp
+*.bin
+*.lock
 *~.nib
 local.properties
 .settings/

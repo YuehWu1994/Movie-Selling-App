@@ -1,0 +1,95 @@
+<!-- This example is following frontend and backend separation.
+
+    This .html performs two steps:
+    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
+    2. Load index.js to populate the data into empty elements.
+    -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <!-- Some simple CSS-->
+    <style type="text/css">
+      header nav {
+        background: black;
+        color: white;
+        padding: 30px 10px;
+      }
+      .search_box {
+        font-size:100%;
+        position: relative;
+        top: 0px;
+        left: 0px;
+      }
+      .topdiv a {
+        COLOR: #C0C0C0;
+      }
+      .search_table {
+        position: relative;
+        top: 100px;
+        left: 600px;
+      }
+      .s_button {
+        position: relative;
+        top: 20px;
+        left: 180px;
+      }
+    </style>
+   
+    <title>FabFlix</title>
+</head>
+<body>
+
+<!-- search box-->
+<header>
+  <nav>
+    <div class="search_box" style="text-align:right;">
+
+      <div class="topdiv" style="color:#C0C0C0;">
+        <a href="metaData.html">Metadata</a>
+        <span>|</span>
+        <a href="dashboardMain.html" >Dashboard</a>
+        <span>|</span>
+        <a href="insertData.html">Add Database Info</a>
+      </div>
+    </div> 
+  </nav>
+</header>
+
+
+<table id="star_table" class="table table-striped">
+    <!-- Create a table header -->
+    <thead>
+    <tr>
+        <!-- Titles of each column-->
+        <th>Id</th>
+        <th>Field</th>
+        <th>Type</th>
+        <th>Null</th>
+        <th>Key</th>
+        <th>Default</th>
+        <th>Extra</th>
+    </tr>
+    </thead>
+    <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
+    <!-- Again, id "star_table_body" is useful for jQuery to find this html element -->
+    <tbody id=tableName></tbody>
+</table>
+
+
+<!-- Load jQuery and Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="metaTable.js"></script>
+</body>
+</html>
