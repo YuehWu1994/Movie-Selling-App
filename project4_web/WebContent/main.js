@@ -60,12 +60,11 @@ function handleLookup(query, doneCallback) {
 	//console.log("sending AJAX request to backend Java Servlet")
 	
 	// TODO: if you want to check past query results first, you can do it here
-	/*
 	if(query in store_qry){
 		console.log("Return query result in cache");
 		handleLookupAjaxSuccess(store_qry[query], query, doneCallback);
 		return;
-	}*/
+	}
 	
 	// sending the HTTP GET request to the Java Servlet endpoint hero-suggestion
 	// with the query data
