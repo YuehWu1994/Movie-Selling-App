@@ -12,10 +12,18 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+          
+    <!-- Using jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    <!-- include jquery autocomplete JS  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.7/jquery.autocomplete.min.js"></script>
+    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="style.css">
     
     <!-- Some simple CSS-->
     <style type="text/css">
@@ -85,7 +93,8 @@
             <input type="hidden" name="p" value="0">
             <input type="hidden" name="numRecord" value="20">
             <input type="hidden" name="genre" value="">
-            <input type="text" name="Title" size="35" placeholder="Click here to search a movie by title"/>
+            <input type="text" name="Title" id="autocomplete"
+              size="35" placeholder="Click here to search a movie by title"/>
             <input type="submit" value="Search" />  
           </form>
           <div class="topdiv" style="color:#C0C0C0;">
@@ -126,11 +135,6 @@
 </div>
 
 <div id=sort_button></div>
-<!-- 
-<button onclick="location.href='http://www.example.com'" type="button"> test &#9650 </button>
-<button onclick="location.href='http://www.example.com'" type="button"> test &#9660 </button>
--->
-
 
 <div>
 <!-- Id "star_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
@@ -155,9 +159,6 @@
 </table>
 </div>
 
-
-
-
 <nav aria-label="Page navigation example">
       <div id=pagination_list> 
       </div>
@@ -166,9 +167,11 @@
 
 
 <!-- Load jQuery and Bootstrap JS -->
+<!--
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+-->
 
 <!-- Load our own JS file -->
 <!-- The path is relative to index.html, since these two files are in the same directory -->
@@ -176,6 +179,4 @@
      otherwise the url is relative to the root path-->
 <script src="index.js"></script>
 </body>
-
-
 </html>
