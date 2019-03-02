@@ -60,11 +60,12 @@ function handleLookup(query, doneCallback) {
 	//console.log("sending AJAX request to backend Java Servlet")
 	
 	// TODO: if you want to check past query results first, you can do it here
+	/*
 	if(query in store_qry){
 		console.log("Return query result in cache");
 		handleLookupAjaxSuccess(store_qry[query], query, doneCallback);
 		return;
-	}
+	}*/
 	
 	// sending the HTTP GET request to the Java Servlet endpoint hero-suggestion
 	// with the query data
@@ -119,7 +120,7 @@ function handleLookupAjaxSuccess(data, query, doneCallback) {
 function handleSelectSuggestion(suggestion) {
 	// TODO: jump to the specific result page based on the selected suggestion
 	console.log("you select " + suggestion["value"] + " with ID " + suggestion["data"]["movie_id"])
-	window.location='index.html?p=0&numRecord=20&genre=&Title='+suggestion["value"];
+	window.location='index.html?p=0&numRecord=20&genre=&Title='+suggestion["value"]+'&autocom=true';
 }
 
 //$('#autocomplete') is to find element by the ID "autocomplete"

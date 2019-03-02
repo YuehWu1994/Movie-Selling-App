@@ -69,21 +69,34 @@ public class MainServlet extends HttpServlet {
             }
             
             // get movie title infomration
-            String query = request.getParameter("query");
             
-            if (query != null && !query.trim().isEmpty()) {
+            String query = request.getParameter("query");
+            if(query != null) query=query.trim();
+            String[] q_arr=null;
+            
+            if(query != null && !query.isEmpty()) q_arr=query.split(" ");
+            
+            if (q_arr != null) {
             	// get movies
-                PreparedStatement moviesStatement = null;
-                String query_movies = "SELECT * from movies";
-                moviesStatement = dbcon.prepareStatement(query_movies);
-                rs = moviesStatement.executeQuery();
-                dbcon.commit();
-                while(rs.next()) {
+            	PreparedStatement moviesStatement = null;
+            	//Full Text Search
+        		String searchStr="SELECT * FROM movies WHERE MATCH (title) AGAINST (? IN BOOLEAN MODE)";
+        		
+        		moviesStatement=dbcon.prepareStatement(searchStr);
+        		//Full text search
+        		String q="";
+        		for(String s : q_arr) {
+        			q+=("+"+s+"* ");
+        			//q+=(s+"* ");
+        		}
+        		
+        		moviesStatement.setString(1, q);
+        		rs = moviesStatement.executeQuery();
+        		dbcon.commit();
+        		while(rs.next()) {
                 	String movie_title=rs.getString("title");
                 	String movie_id=rs.getString("id");
-                	if(movie_title.toLowerCase().contains(query.toLowerCase())) {
-                		jsonArray.add(generate_movie_obj(movie_id, movie_title));
-                	}
+                	jsonArray.add(generate_movie_obj(movie_id, movie_title));
                 }
          	}
             

@@ -184,28 +184,12 @@ let Year = getParameterByName('Year');
 let Director = getParameterByName('Director');
 let Star_name = getParameterByName('Star_name');
 let Sort_type = getParameterByName('sort');
+let autocom = getParameterByName('autocom');
 
 // Makes the HTTP GET request and registers on success callback function handleStarResult
-
-/*
 jQuery.ajax({
     dataType: "json", // Setting return data type
     method: "GET", // Setting request method
-    url: "api/movies?p=" + currentPage + "&numRecord=" +recordNum, // Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleStarResult(resultData) // Setting callback function to handle data returned successfully by the StarsServlet
-});*/
-
-/*
-jQuery.ajax({
-    dataType: "json", // Setting return data type
-    method: "GET", // Setting request method
-    url: "api/movies?p=" + currentPage + "&numRecord=" +recordNum+"&genre="+genre, // Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleStarResult(resultData) // Setting callback function to handle data returned successfully by the StarsServlet
-});*/
-
-jQuery.ajax({
-    dataType: "json", // Setting return data type
-    method: "GET", // Setting request method
-    url: "api/movies?p=" + currentPage + "&numRecord=" +recordNum+"&genre="+genre+"&Title="+Title+"&Year="+Year+"&Director="+Director+"&Star_name="+Star_name+"&sort="+Sort_type, // Setting request url, which is mapped by StarsServlet in Stars.java
+    url: "api/movies?p=" + currentPage + "&numRecord=" +recordNum+"&genre="+genre+"&Title="+Title+"&Year="+Year+"&Director="+Director+"&Star_name="+Star_name+"&sort="+Sort_type+"&autocom="+autocom, // Setting request url, which is mapped by StarsServlet in Stars.java
     success: (resultData) => handleStarResult(resultData) // Setting callback function to handle data returned successfully by the StarsServlet
 });
