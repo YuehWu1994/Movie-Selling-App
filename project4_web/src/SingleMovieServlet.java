@@ -55,7 +55,7 @@ public class SingleMovieServlet extends HttpServlet {
 			// num 1 indicates the first "?" in the query
 			statement.setString(1, id);
 			statement2.setString(1, id);
-
+			
 			// Perform the query
 			ResultSet rs = statement.executeQuery();
 			ResultSet rs2 = statement2.executeQuery();
@@ -65,7 +65,6 @@ public class SingleMovieServlet extends HttpServlet {
 			// Iterate through each row of rs
 			rs2.next();
 			while (rs.next()) {
-
 				String m_id = rs.getString("id");
 				String m_title = rs.getString("title");
 				String m_year = rs.getString("year");
@@ -75,6 +74,10 @@ public class SingleMovieServlet extends HttpServlet {
 				String genreList = rs2.getString("genreList");
 				String starId = rs.getString("starId");
 				String starName = rs.getString("name");
+				
+				/*
+				System.out.println("the id");
+				System.out.println(m_id);*/
 				
 				// Create a JsonObject based on the data we retrieve from rs
 				JsonObject jsonObject = new JsonObject();

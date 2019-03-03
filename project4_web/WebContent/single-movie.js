@@ -55,7 +55,9 @@ function handleResult(resultData) {
     // populate the star info h3
     // find the empty h3 body by id "star_info"
     let starInfoElement = jQuery("#movie_info");
-
+    console.log("Hi");
+    console.log(resultData[0]["m_id"]);
+    
     // append two html <p> created to the h3 body, which will refresh the page
     starInfoElement.append("<li class='list-group-item'>Movie Id: " + resultData[0]["m_id"] + "</li>" +
     	"<li class='list-group-item'>Movie Name: " + resultData[0]["m_title"] + "</li>" +
@@ -202,7 +204,8 @@ function handleLookupAjaxSuccess(data, query, doneCallback) {
 function handleSelectSuggestion(suggestion) {
 	// TODO: jump to the specific result page based on the selected suggestion
 	console.log("you select " + suggestion["value"] + " with ID " + suggestion["data"]["movie_id"])
-	window.location='index.html?p=0&numRecord=20&genre=&Title='+suggestion["value"]+'&autocom=true';
+	//window.location='index.html?p=0&numRecord=20&genre=&Title='+suggestion["value"]+'&autocom=true';
+	window.location='single-movie.html?Title='+suggestion["value"]+'&id='+suggestion["data"]["movie_id"];
 }
 
 //$('#autocomplete') is to find element by the ID "autocomplete"
