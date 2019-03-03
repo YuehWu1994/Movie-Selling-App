@@ -61,8 +61,11 @@
 <header>
   <nav>
     <div class="search_box" style="text-align:right;">
-      <form action="form_action.asp" method="get">
-        <input type="text" name="email" size="35" placeholder="Click here to search a movie by title"/>
+      <form action="index.html" method="get">
+        <input type="hidden" name="p" value="0">
+        <input type="hidden" name="numRecord" value="20">
+        <input type="hidden" name="genre" value="">
+        <input type="text" name="Title" id="autocomplete" size="35" placeholder="Click here to search a movie by title"/>
         <input type="submit" value="Search" />  
       </form>
       <div class="topdiv" style="color:#C0C0C0;">
@@ -132,8 +135,8 @@
                                 <input type="hidden" name="genre" value="">
 	                            <div class="form-group">
 	                                <label><b>Title</b></label> 
-	                                <!--  <input type="text" placeholder="Click here to search a movie" class="form-control" name="Title"> -->
-	                                <input type="text" placeholder="Click here to search a movie" class="form-control" name="Title" id="autocomplete">
+	                                <input type="text" placeholder="Click here to search a movie" class="form-control" name="Title">
+	                                <!--  <input type="text" placeholder="Click here to search a movie" class="form-control" name="Title" id="autocomplete"> -->
 	                            </div>
 	                            <div class="form-group">
 	                                <label><b>Year</b></label> 
