@@ -56,7 +56,7 @@ jQuery.ajax({
 let store_qry={};
 
 function handleLookup(query, doneCallback) {
-	console.log("autocomplete initiated")
+	console.log("autocomplete initiated, query is: ", query)
 	//console.log("sending AJAX request to backend Java Servlet")
 	
 	// TODO: if you want to check past query results first, you can do it here

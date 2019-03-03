@@ -16,26 +16,26 @@ public class LoginFilter implements Filter {
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
      */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-        
-        System.out.println("LoginFilter: " + httpRequest.getRequestURI());
-        // Check if the URL is allowed to be accessed without log in
-        if (this.isUrlAllowedWithoutLogin(httpRequest.getRequestURI())) {
-            // Keep default action: pass along the filter chain
+//        HttpServletRequest httpRequest = (HttpServletRequest) request;
+//        HttpServletResponse httpResponse = (HttpServletResponse) response;
+//
+//        
+//        System.out.println("LoginFilter: " + httpRequest.getRequestURI());
+//        // Check if the URL is allowed to be accessed without log in
+//        if (this.isUrlAllowedWithoutLogin(httpRequest.getRequestURI())) {
+//            // Keep default action: pass along the filter chain
+//            chain.doFilter(request, response);
+//            return;
+//        }
+//
+//        // Redirect to login page if the "user" attribute doesn't exist in session
+//        // use the session to remember if the user has logged in
+//        if (httpRequest.getSession().getAttribute("user") == null) {
+//            httpResponse.sendRedirect("login.html");
+//        } else {
+//            // If the user exists in current session, redirects the user to the corresponding URL
             chain.doFilter(request, response);
-            return;
-        }
-
-        // Redirect to login page if the "user" attribute doesn't exist in session
-        // use the session to remember if the user has logged in
-        if (httpRequest.getSession().getAttribute("user") == null) {
-            httpResponse.sendRedirect("login.html");
-        } else {
-            // If the user exists in current session, redirects the user to the corresponding URL
-            chain.doFilter(request, response);
-        }
+//        }
     }
 
     // allow rule

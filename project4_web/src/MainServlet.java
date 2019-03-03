@@ -71,7 +71,10 @@ public class MainServlet extends HttpServlet {
             // get movie title infomration
             
             String query = request.getParameter("query");
-            if(query != null) query=query.trim();
+            if(query != null) {
+            	query=query.trim();
+            	query=query.replaceAll("\\s+", " ");
+            }
             String[] q_arr=null;
             
             if(query != null && !query.isEmpty()) q_arr=query.split(" ");

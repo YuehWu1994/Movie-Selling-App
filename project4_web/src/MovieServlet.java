@@ -34,7 +34,7 @@ public class MovieServlet extends HttpServlet {
         
         // Get genre from url.
         String genre = request.getParameter("genre");
-        String Title = request.getParameter("Title");
+        String Title = request.getParameter("Title").replaceAll("\\s+", " ");
         String[] title_arr=Title.split(" ");
         String Year = request.getParameter("Year");
         String Director = request.getParameter("Director");
@@ -44,6 +44,7 @@ public class MovieServlet extends HttpServlet {
         
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
+        System.out.println(Title);
         
         // parse request and count movie query offset
         int page = Integer.parseInt(request.getParameter("p"));  
@@ -79,7 +80,7 @@ public class MovieServlet extends HttpServlet {
         			searchStr="SELECT * FROM ("+searchStr+") q WHERE q.title=?";
         		}
         		else {
-        			System.out.println("Perfrom full text search");
+        			System.out.println("Perform full text search");
         			searchStr="SELECT * FROM ("+searchStr+") q WHERE MATCH (q.title) AGAINST (? IN BOOLEAN MODE)";
         		}
         		
