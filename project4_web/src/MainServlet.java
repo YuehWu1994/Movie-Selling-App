@@ -82,6 +82,18 @@ public class MainServlet extends HttpServlet {
             	//Full Text Search
         		String searchStr="SELECT * FROM movies WHERE MATCH (title) AGAINST (? IN BOOLEAN MODE)";
         		
+        		// fuzzy search
+        		String fuzzy_q= " or(";
+        		System.out.println(q_arr.length);
+        		for(int i = 0; i < q_arr.length; ++i) {
+        			if(i != 0) fuzzy_q += " and ";
+        			int fuzzy_thres = (q_arr[i].length()-1)/5;
+        			fuzzy_q+= "(SELECT edrec('" + q_arr[i].toLowerCase() +"', title, " + Integer.toString(fuzzy_thres) + ")= 1)";
+        		}
+        		fuzzy_q += ")";
+        		searchStr += fuzzy_q;        	
+        		
+        		
         		moviesStatement=dbcon.prepareStatement(searchStr);
         		//Full text search
         		String q="";

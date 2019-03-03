@@ -84,7 +84,7 @@ public class MovieServlet extends HttpServlet {
         		}
         		
         		// apply Fuzzy token by token
-        		/*
+        		
         		String q= " or(";
         		for(int i = 0; i < title_arr.length; ++i) {
         			if(i != 0) q += " and ";
@@ -92,7 +92,7 @@ public class MovieServlet extends HttpServlet {
         			q+= "(SELECT edrec('" + title_arr[i].toLowerCase() +"', q.title, " + Integer.toString(fuzzy_thres) + ")= 1)";
         		}
         		q += ")";
-        		searchStr += q;*/
+        		searchStr += q;
             }
             if(!Year.equals("") && !Year.equals("null")) {
             	searchStr= "SELECT * FROM ("+searchStr+") q WHERE q.year like ?";
