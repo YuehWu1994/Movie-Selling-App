@@ -32,6 +32,7 @@ public class metaTableServlet extends HttpServlet {
         response.setContentType("application/json"); // Response mime type
         
         String tableName = request.getParameter("t");
+        PreparedStatement showStatement = null;
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
         
@@ -39,16 +40,20 @@ public class metaTableServlet extends HttpServlet {
         try {
             // Get a connection from dataSource
             Connection dbcon = dataSource.getConnection();
-            Statement showStatement = dbcon.createStatement();
             
             String showTableStr = "SHOW COLUMNS FROM " + tableName;
+            
+            dbcon.setAutoCommit(false);
+            showStatement = dbcon.prepareStatement(showTableStr);
+            
             
             System.out.println(showStatement);
                 
         	JsonArray jsonArray = new JsonArray();
 
             // Perform the query
-            ResultSet rs = showStatement.executeQuery(showTableStr);
+            ResultSet rs = showStatement.executeQuery();
+            dbcon.commit();
 
             
             // Iterate through each row of rs
