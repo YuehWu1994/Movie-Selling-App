@@ -4,11 +4,25 @@ CREATE PROCEDURE addMovie (IN title VARCHAR(100), IN year INT, IN director VARCH
 BEGIN
 	SET @mxMovie = (SELECT MAX(id) from movies);
 	SET @tmp =  CONVERT(SUBSTRING(@mxMovie, 3),UNSIGNED INTEGER) + 1;
-	SET @mxMovie = CONCAT ("tt",CONVERT(@tmp, CHAR(10)));
+	IF (@tmp = 1) THEN
+		SET @mxMovie = title;
+	ELSE
+		SET @mxMovie = CONCAT ("tt",CONVERT(@tmp, CHAR(10)));
+	END IF;
+
+	SELECT @mxMovie;
+	
 
 	SET @mxStar = (select MAX(id) from stars);
 	SET @tmp =  CONVERT(SUBSTRING(@mxStar, 3),UNSIGNED INTEGER) + 1;
-	SET @mxStar = CONCAT ("nm",CONVERT(@tmp, CHAR(10)));
+	IF (@tmp = 1) THEN
+		SET @mxStar = starName;
+	ELSE		
+		SET @mxStar = CONCAT ("nm",CONVERT(@tmp, CHAR(10)));
+	END IF;
+
+	SELECT @mxStar;
+	
 
 	SET @mxGenre = (select MAX(id) from genres);
 	SET @mxGenre = @mxGenre + 1;
@@ -55,4 +69,4 @@ BEGIN
 END
 $$
 DELIMITER ;
-
+# call addMovie('HelloWorld',1994,'HelloWorld','HelloWorld','HelloWorld',0,0,0);

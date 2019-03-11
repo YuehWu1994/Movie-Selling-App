@@ -85,10 +85,17 @@ public class addStarServlet extends HttpServlet {
     		statement.close();
     		
     		// add id(varchar) by 1
-    		int idNum = Integer.parseInt(largestId.substring(2)) + 1;
-    		System.out.println(idNum); 
-    		largestId = "nm" + Integer.toString(idNum);
-    		System.out.println(largestId); 
+    		String rem = largestId.substring(2);
+    		if(rem.charAt(0) >= '0' && rem.charAt(0)  <= '9') {
+        		int idNum = Integer.parseInt(rem) + 1;
+        		System.out.println(idNum); 
+        		largestId = "nm" + Integer.toString(idNum);
+        		System.out.println(largestId);     			
+    		}
+    		else {
+    			largestId = starName;
+    		}
+
             
             
     		// insert stars
