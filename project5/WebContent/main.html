@@ -1,0 +1,122 @@
+<!-- This example is following frontend and backend separation.
+
+    This .html performs two steps:
+    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
+    2. Load index.js to populate the data into empty elements.
+    -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Using jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    <!-- include jquery autocomplete JS  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.7/jquery.autocomplete.min.js"></script>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+     
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Some simple CSS-->
+    <style type="text/css">
+      header nav {
+        background: black;
+        color: white;
+        padding: 30px 10px;
+      }
+      /*
+      .search_box {
+        font-size:100%;
+        position: relative;
+        top: 0px;
+        left: 0px;
+      }*/
+      /*
+      .autocomplete-bar{
+        background: black;
+        color: white;
+      }*/
+      .topdiv a {
+        COLOR: #C0C0C0;
+      }
+      /*
+      .form-control-xxx {
+        width:500px;
+        display:inline;
+      }*/
+    </style>
+   
+    <title>FabFlix</title>
+</head>
+<body>
+
+<!-- search box-->
+<header>
+  <nav>
+    <!-- style="text-align:right;" -->
+    <div class="search_box" style="text-align:right;">
+      <!--  
+      <form action="form_action.asp" method="get">
+        <input type="text" name="email" size="35" placeholder="Click here to search a movie"/>
+        <input type="submit" value="Search" />  
+      </form>
+      -->
+      
+       
+      <form action="index.html" method="get">
+        <input type="hidden" name="p" value="0">
+        <input type="hidden" name="numRecord" value="20">
+        <input type="hidden" name="genre" value="">
+
+        <input type="text" name="Title" id="autocomplete"
+            size="35" placeholder="Click here to search a movie by title"/>
+        <input type="submit" value="Search" />
+      </form>
+      
+      
+      <div class="topdiv" style="color:#C0C0C0;">
+        <a href="main.html" >Home</a>
+        <span>|</span>
+        <a href="advanced.html">Advanced Search</a>
+        <span>|</span>
+        <a href="#contact">Sign in</a>
+        <span>|</span>
+        <a href="shoppingCart.html?movie=#">My Cart</a>
+      </div>
+    </div> 
+  </nav>
+</header>
+      
+<div class="jumbotron text-center">
+  <img src="https://tunesgo.wondershare.com/images/article/2017/07/top-movie-ringtones-in-2017.jpg" class="img-fluid">
+  <h1 style="font-family:Impact;font-size:80px;">FabFlix</h1>
+</div>
+
+<!-- Browse by Genres or Title-->
+<div style="text-align:center;">
+  <h4>Browse Movies by Genres</h4>
+  <div id=genres></div>
+
+  <h4>Browse Movies by Title</h4>
+  <div id=titles></div>
+</div>
+
+<!-- Load jQuery and Bootstrap JS -->
+<!--
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+-->
+<!--
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+-->
+<script src="main.js"></script>
+</body>
+</html>

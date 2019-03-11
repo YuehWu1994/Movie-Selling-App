@@ -1,0 +1,171 @@
+<!-- This example is following frontend and backend separation.
+
+    This .html performs two steps:
+    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
+    2. Load index.js to populate the data into empty elements.
+    -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+          
+    <!-- Using jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    <!-- include jquery autocomplete JS  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.7/jquery.autocomplete.min.js"></script>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+     
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Some simple CSS-->
+    <style type="text/css">
+      header nav {
+        background: black;
+        color: white;
+        padding: 30px 10px;
+      }
+      .search_box {
+        font-size:100%;
+        position: relative;
+        top: 0px;
+        left: 0px;
+      }
+      .topdiv a {
+        COLOR: #C0C0C0;
+      }
+      .search_table {
+        position: relative;
+        top: 100px;
+        left: 600px;
+      }
+      .s_button {
+        position: relative;
+        top: 20px;
+        left: 180px;
+      }
+    </style>
+   
+    <title>FabFlix</title>
+</head>
+<body>
+
+<!-- search box-->
+<header>
+  <nav>
+    <div class="search_box" style="text-align:right;">
+      <form action="index.html" method="get">
+        <input type="hidden" name="p" value="0">
+        <input type="hidden" name="numRecord" value="20">
+        <input type="hidden" name="genre" value="">
+        <input type="text" name="Title" id="autocomplete" size="35" placeholder="Click here to search a movie by title"/>
+        <input type="submit" value="Search" />  
+      </form>
+      <div class="topdiv" style="color:#C0C0C0;">
+        <a href="main.html" >Home</a>
+        <span>|</span>
+        <a href="advanced.html">Advanced Search</a>
+        <span>|</span>
+        <a href="#contact">Sign in</a>
+        <span>|</span>
+        <!-- <a href="#contact">My Cart</a> -->
+        <a href="shoppingCart.html?movie=#">My Cart</a>
+      </div>
+    </div> 
+  </nav>
+</header>
+
+<!-- 
+<div class="search_table">
+<form action="index.html" method="get">
+<table style="width:50%">
+  <input type="hidden" name="p" value="0">
+  <input type="hidden" name="numRecord" value="20">
+  <input type="hidden" name="genre" value="">
+  <tr>
+    <td>Title</td>
+    <td>
+      <input type="text" name="Title" size="35" placeholder="Click here to search a movie"/>
+    </td>
+  </tr>
+  <tr>
+    <td>Year</td>
+    <td>
+      <input type="text" name="Year" size="35" placeholder="Click here to search a movie"/>
+    </td> 
+  </tr>
+  <tr>
+    <td>Director</td>
+    <td>
+      <input type="text" name="Director" size="35" placeholder="Click here to search a movie"/>
+    </td> 
+  </tr>
+  <tr>
+    <td>Star's name</td>
+    <td>
+      <input type="text" name="Star_name" size="35" placeholder="Click here to search a movie"/>
+    </td>
+  </tr>
+  
+</table>
+  <div class="s_button">
+    <input type="submit" value="Submit">
+  </div>
+</form>
+</div>
+-->
+
+
+<div class="container">
+        <div class="row justify-content-center align-items-center" style="height:100vh">
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-body">
+                    	<h2 class="text-center">Advanced Search</h2>
+	                        <form action="index.html" method="get">
+	                            <input type="hidden" name="p" value="0">
+                                <input type="hidden" name="numRecord" value="20">
+                                <input type="hidden" name="genre" value="">
+	                            <div class="form-group">
+	                                <label><b>Title</b></label> 
+	                                <input type="text" placeholder="Click here to search a movie" class="form-control" name="Title">
+	                                <!--  <input type="text" placeholder="Click here to search a movie" class="form-control" name="Title" id="autocomplete"> -->
+	                            </div>
+	                            <div class="form-group">
+	                                <label><b>Year</b></label> 
+	                                <input type="text" placeholder="Click here to search a movie" class="form-control" name="Year">
+	                            </div>
+                              <div class="form-group">
+	                                <label><b>Director</b></label> 
+	                                <input type="text" placeholder="Click here to search a movie" class="form-control" name="Director">
+	                            </div>
+                              <div class="form-group">
+	                                <label><b>Star's name</b></label> 
+	                                <input type="text" placeholder="Click here to search a movie" class="form-control" name="Star_name">
+	                            </div>
+                              
+	                            <input type="submit" class="btn btn-primary" value="Submit">
+	                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+<!-- Load jQuery and Bootstrap JS -->
+<!--  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+-->
+<script src="advanced.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!-- This example is following frontend and backend separation.
+
+    This .html performs two steps:
+    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
+    2. Load single-star.js to populate the data into empty elements.
+    -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+     <!-- Using jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    <!-- include jquery autocomplete JS  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.7/jquery.autocomplete.min.js"></script>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Some simple CSS-->
+    <style type="text/css">
+      header nav {
+        background: black;
+        color: white;
+        padding: 30px 10px;
+      }		
+      .search_box {
+        font-size:100%;
+        position: relative;
+        top: 0px;
+        left: 0px;
+      }
+      .topdiv a {
+        color: #C0C0C0;
+      }
+      		
+      .single_star_page ul{
+        color:black;
+      }
+      .list-group{
+        color:black;
+      }
+    </style>
+        
+    <title>Single Star Page</title>
+  </head>
+  
+  <body>
+    <!--
+    <header>
+      <nav>
+        <div class="single_star_page">
+          <h1>Single Star Page</h1>
+          <button data-toggle="collapse" data-target="#demo">Star Bio</button>
+          <div id="demo" class="collapse">
+            <ul id="star_info" class="list-group"></ul> 
+          </div>
+        </div>
+        
+        <div class="search_box" style="text-align:right;">
+      	  <form action="form_action.asp" method="get">
+            <input type="text" name="email" size="35" placeholder="Click here to search a movie by title"/>
+            <input type="submit" value="Search" />  
+          </form>
+          <div class="topdiv" style="color:#C0C0C0;">
+            <span id=go_back></span>
+            <span>|</span>
+            <a href="main.html" >Home</a>
+            <span>|</span>
+            <a href="advanced.html">Advanced Search</a>
+            <span>|</span>
+            <a href="#contact">Sign in</a>
+            <span>|</span>
+            <a href="shoppingCart.html?movie=#">My Cart</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    -->
+    
+    <header>
+      <nav>
+        <div class="container-fluid">
+        <div class="row justify-content-between">
+        
+        <div class="col-ms-4">
+          <h1>Single Star Page</h1>
+          <button data-toggle="collapse" data-target="#demo">Star Bio</button>
+          <div id="demo" class="collapse">
+            <ul id="star_info" class="list-group"></ul> 
+          </div>
+        </div>
+        
+        <div class="col-ms-4">
+      	  <form action="index.html" method="get">
+      	    <!--  
+            <input type="text" name="Title" size="35" placeholder="Click here to search a movie by title"/>
+            -->
+            <input type="text" name="Title" id="autocomplete"
+            size="35" placeholder="Click here to search a movie by title"/>
+            <input type="submit" value="Search" />  
+          </form>
+          <div class="topdiv" style="color:#C0C0C0;">
+            <span id=go_back></span>
+            <span>|</span>
+            <a href="main.html" >Home</a>
+            <span>|</span>
+            <a href="advanced.html">Advanced Search</a>
+            <span>|</span>
+            <a href="#contact">Sign in</a>
+            <span>|</span>
+            <a href="shoppingCart.html?movie=#">My Cart</a>
+          </div>
+        </div>
+        
+        </div>
+        </div>
+      </nav>
+    </header>
+    
+    <table id=movie_table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Movie Title</th>
+          <th>Release Year</th>
+          <th>Director</th>
+        </tr>
+      </thead>
+    <tbody id=star_table_body></tbody>
+  </table>
+
+ <!-- Load jQuery and Bootstrap JS -->
+ <!--  
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+ -->
+ <script src="single-star.js"></script>
+</body>
+
+</html>
