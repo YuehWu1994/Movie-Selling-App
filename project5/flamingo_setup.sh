@@ -33,7 +33,9 @@ cat ed.sql edth.sql edrec.sql | mysql --database=mysql --password --user=root
 
 
 # a. upload toolkits to AWS from my local machine
-scp -i "cs122b_2.pem" ~/Downloads/toolkit_2008-10-14.tgz ubuntu@ec2-13-58-57-112.us-east-2.compute.amazonaws.com:/home/ubuntu
+scp -i "cs122b_2.pem" ~/Downloads/toolkit_2008-10-14.tgz ubuntu@ec2-18-221-18-233.us-east-2.compute.amazonaws.com:/home/ubuntu
+scp -i "cs122b_2.pem" ~/Downloads/toolkit_2008-10-14.tgz ubuntu@ec2-52-14-79-247.us-east-2.compute.amazonaws.com:/home/ubuntu
+
 
 # b. access your AWS
 ssh -i "cs122b_2.pem" ubuntu@ec2-13-58-57-112.us-east-2.compute.amazonaws.com 

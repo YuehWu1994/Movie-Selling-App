@@ -33,6 +33,7 @@ public class ShoppingCartServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         String sessionId = session.getId();
+        
         Long lastAccessTime = session.getLastAccessedTime();
         
         JsonObject responseJsonObject = new JsonObject();
@@ -55,6 +56,7 @@ public class ShoppingCartServlet extends HttpServlet {
         else if(removeMovie == null && item != null && qty != null) status = 1;
   
         HttpSession session = request.getSession();
+        System.out.println("sessionId=" + session.getId());
         
         HashMap<String, Integer> m = (HashMap<String, Integer>) session.getAttribute("itemMap");
         

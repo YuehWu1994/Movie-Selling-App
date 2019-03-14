@@ -62,7 +62,7 @@ public class ConfirmServlet extends HttpServlet {
             	response.getWriter().println("envCtx is NULL");
 
             // Look up our data source
-            DataSource ds = (DataSource) envCtx.lookup("jdbc/moviedb");
+            DataSource ds = (DataSource) envCtx.lookup("jdbc/write_moviedb");
             if (ds == null)
             	response.getWriter().println("ds is null.");
 

@@ -69,4 +69,4 @@ BEGIN
 END
 $$
 DELIMITER ;
-# call addMovie('HelloWorld',1994,'HelloWorld','HelloWorld','HelloWorld',0,0,0);
+# call addMovie('HelloWorld',1994,'HelloWorld','HelloWorld','HelloWorld',@a,@b,@c);

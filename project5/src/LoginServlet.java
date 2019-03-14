@@ -142,6 +142,7 @@ public class LoginServlet extends HttpServlet {
         if (responseJsonObject.get("status").getAsString().equals("success")) {
             // login success
             request.getSession().setAttribute("user", new User(username));
+            System.out.println("set session");
             response.getWriter().write(responseJsonObject.toString());
         } else {
             response.getWriter().write(responseJsonObject.toString());
