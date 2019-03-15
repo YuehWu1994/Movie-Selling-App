@@ -125,7 +125,6 @@ public class MainServlet extends HttpServlet {
         		fuzzy_q += ")";
         		searchStr += fuzzy_q;	
         		
-        		
         		moviesStatement=dbcon.prepareStatement(searchStr);
         		//Full text search
         		String q="";
