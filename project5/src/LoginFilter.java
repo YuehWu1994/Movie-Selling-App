@@ -22,6 +22,7 @@ public class LoginFilter implements Filter {
         
         System.out.println("LoginFilter: " + httpRequest.getRequestURI());
         // Check if the URL is allowed to be accessed without log in
+        /*
         if (this.isUrlAllowedWithoutLogin(httpRequest.getRequestURI())) {
             // Keep default action: pass along the filter chain
             chain.doFilter(request, response);
@@ -35,7 +36,9 @@ public class LoginFilter implements Filter {
         } else {
             // If the user exists in current session, redirects the user to the corresponding URL
             chain.doFilter(request, response);
-        }
+        }*/
+
+        chain.doFilter(request, response);
     }
 
     // allow rule

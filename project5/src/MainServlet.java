@@ -1,6 +1,5 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +15,8 @@ import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.io.File;
+import java.io.FileWriter;
 
 /**
  * Servlet implementation class MainServlet
@@ -43,8 +44,17 @@ public class MainServlet extends HttpServlet {
 		response.setContentType("application/json"); // Response mime type
 		PrintWriter out = response.getWriter();
 		
-		
+		// Write a file from servlet.
+		String contextPath = getServletContext().getRealPath("/");
+		String xmlFilePath = contextPath+"main_res";
+		System.out.println("xmlFilePath: "+ xmlFilePath);
+		File myfile = new File(xmlFilePath);
+        myfile.createNewFile();
+        
 		try {
+			// Start time of query.
+        	long startquery = System.nanoTime();
+        	
             // Get a connection from dataSource
             Context initCtx = new InitialContext();
 
@@ -60,6 +70,10 @@ public class MainServlet extends HttpServlet {
             Connection dbcon = ds.getConnection();
             if (dbcon == null)
             	response.getWriter().println("dbcon is null.");
+            
+            // Start time of JDBC.
+            long startJDBC = System.nanoTime();
+            
             dbcon.setAutoCommit(false);
 
             // prepare string and statement
@@ -101,6 +115,7 @@ public class MainServlet extends HttpServlet {
         		String searchStr="SELECT * FROM movies WHERE MATCH (title) AGAINST (? IN BOOLEAN MODE)";
         		
         		// fuzzy search
+        		/*
         		String fuzzy_q= " or(";
         		System.out.println(q_arr.length);
         		for(int i = 0; i < q_arr.length; ++i) {
@@ -109,7 +124,7 @@ public class MainServlet extends HttpServlet {
         			fuzzy_q+= "(SELECT edrec('" + q_arr[i].toLowerCase() +"', title, " + Integer.toString(fuzzy_thres) + ")= 1)";
         		}
         		fuzzy_q += ")";
-        		searchStr += fuzzy_q;        	
+        		searchStr += fuzzy_q;*/ 	
         		
         		
         		moviesStatement=dbcon.prepareStatement(searchStr);
@@ -123,11 +138,28 @@ public class MainServlet extends HttpServlet {
         		moviesStatement.setString(1, q);
         		rs = moviesStatement.executeQuery();
         		dbcon.commit();
+        		
+        		long endJDBC=System.nanoTime();
+        		
         		while(rs.next()) {
                 	String movie_title=rs.getString("title");
                 	String movie_id=rs.getString("id");
                 	jsonArray.add(generate_movie_obj(movie_id, movie_title));
                 }
+        		
+        		long endquery=System.nanoTime();
+        		
+        		// calculate the time for query and JDBC part
+                long queryTime=endquery-startquery;
+                long JDBCTime=endJDBC-startJDBC;
+                
+                // write the file
+                FileWriter writer;
+                writer = new FileWriter(myfile, true);
+                writer.write(String.valueOf(queryTime)+" "+ String.valueOf(JDBCTime) + "\n");
+                writer.close();
+                
+                System.out.println("TS: "+ String.valueOf(queryTime)+ " TJ: "+ String.valueOf(JDBCTime));
          	}
             
             out.write(jsonArray.toString());
