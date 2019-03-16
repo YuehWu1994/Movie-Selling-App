@@ -20,7 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-// Declaring a WebServlet called StarsServlet, which maps to url "/api/stars"
+// prepared statement and connection pooling.
 @WebServlet(name = "StarsServlet", urlPatterns = "/api/movies")
 public class MovieServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -143,25 +143,25 @@ public class MovieServlet extends HttpServlet {
         	// Start time of query.
         	long startquery = System.nanoTime();
         	
-            // Connection pooling and prepared statement.
-//            Context initCtx = new InitialContext();
-//
-//            Context envCtx = (Context) initCtx.lookup("java:comp/env");
-//            if (envCtx == null)
-//            	response.getWriter().println("envCtx is NULL");
-//
-//            // Look up our data source
-//            DataSource ds = (DataSource) envCtx.lookup("jdbc/moviedb");
-//            if (ds == null)
-//            	response.getWriter().println("ds is null.");
-//
-//            Connection dbcon = ds.getConnection();
-//            if (dbcon == null)
-//            	response.getWriter().println("dbcon is null.");        
-        	
-        	// Prepared Statement.
-            Connection dbcon = dataSource.getConnection();
-        	
+            // connection pooling and prepared statement.
+            Context initCtx = new InitialContext();
+
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            if (envCtx == null)
+            	response.getWriter().println("envCtx is NULL");
+
+            // Look up our data source
+            DataSource ds = (DataSource) envCtx.lookup("jdbc/moviedb");
+            if (ds == null)
+            	response.getWriter().println("ds is null.");
+
+            Connection dbcon = ds.getConnection();
+            if (dbcon == null)
+            	response.getWriter().println("dbcon is null.");    
+
+        	// only prepared statement.
+//            Connection dbcon = dataSource.getConnection();
+            
             // Start time of JDBC.
             long startJDBC = System.nanoTime();
             
@@ -346,8 +346,9 @@ public class MovieServlet extends HttpServlet {
     }
 }
 
-//Without prepared statement
+
 /*
+//normal statement statement
 @WebServlet(name = "StarsServlet", urlPatterns = "/api/movies")
 public class MovieServlet extends HttpServlet {
  private static final long serialVersionUID = 1L;
