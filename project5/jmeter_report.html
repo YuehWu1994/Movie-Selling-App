@@ -1,0 +1,114 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    background-color: linen;
+}
+
+td {
+    border-top-style: solid;
+}
+</style>
+</head>
+<body>
+
+<table style="width:100%">
+  <tr style="font-weight:bold; background-color: orange">
+    <td width="300px">Single-instance version cases</td>
+    <td>Graph Results Screenshot</td>
+    <td>Average Query Time(ms)</td>
+    <td>Average Search Servlet Time(ms)</td>
+    <td>Average JDBC Time(ms)</td>
+    <td>Analysis</td>
+  </tr>
+  <tr>
+    <td>Case 1: HTTP/1 thread</td>
+    <td><img src="figure/single/log1.png" alt="Graph Results Screenshot Case 1" style="width:304px;height:228px;"></td>
+    <td>245</td>
+    <td>48.76</td>
+    <td>47.22</td>
+    <td>If the number of threads are reduced to one, all of the time will become lower.</td>
+  </tr>
+  <tr>
+    <td>Case 2: HTTP/10 threads</td>
+    <td><img src="figure/single/log2.png" alt="Graph Results Screenshot Case 2" style="width:304px;height:228px;"></td>
+    <td>535</td>
+    <td>328.75</td>
+    <td>323.93</td>
+    <td>Compared to the one without prepared statements or without connection pooling, there is no much difference. All of the time required are slightly lower than them.</td>
+  </tr>
+  <tr>
+    <td>Case 3: HTTPS/10 threads</td>
+    <td><img src="figure/single/log3.png" alt="Graph Results Screenshot Case 3" style="width:304px;height:228px;"></td>
+    <td>719</td>
+    <td>325.13</td>
+    <td>320.28</td>
+    <td>When using HTTPS, the average query time will become larger. TS and TS remain similar.</td>
+  </tr>
+  <tr>
+    <td>Case 4: HTTP/10 threads/No prepared statements</td>
+    <td><img src="figure/single/log4.png" alt="Graph Results Screenshot Case 4" style="width:304px;height:228px;"></td>
+    <td>545</td>
+    <td>330.93</td>
+    <td>326.36</td>
+    <td>It’s similar to the result that uses prepared statements. TS and TJ are slightly larger than that.</td>
+  </tr>
+  <tr>
+    <td>Case 5: HTTP/10 threads/No connection pooling</td>
+    <td><img src="figure/single/log5.png" alt="Graph Results Screenshot Case 4" style="width:304px;height:228px;"></td>
+    <td>545</td>
+    <td>328.68</td>
+    <td>324.1</td>
+    <td>It’s similar to the one using connection pooling. The average query time is a bit larger than that.</td>
+  </tr>
+
+</table> 
+
+
+<table style="width:100%">
+  <tr style="font-weight:bold; background-color: orange">
+    <td width="300px">Scaled version cases</td>
+    <td>Graph Results Screenshot</td>
+    <td>Average Query Time(ms)</td>
+    <td>Average Search Servlet Time(ms)</td>
+    <td>Average JDBC Time(ms)</td>
+    <td>Analysis</td>
+  </tr>
+  <tr>
+    <td>Case 1: HTTP/1 thread</td>
+    <td><img src="figure/scaled/log1.png" alt="Graph Results Screenshot Case 1" style="width:304px;height:228px;"></td>
+    <td>246</td>
+    <td>47.05</td>
+    <td>45.74</td>
+    <td>Compared to single-instance, all of time required are similar. 1 thread in scaled version is also a lot smaller than 10 threads.</td>
+  </tr>
+  <tr>
+    <td>Case 2: HTTP/10 threads</td>
+    <td><img src="figure/scaled/log2.png" alt="Graph Results Screenshot Case 2" style="width:304px;height:228px;"></td>
+    <td>319</td>
+    <td>113.14</td>
+    <td>110.26</td>
+    <td>Compared to single-instance, all of the time required are smaller. Compared to others in scaled version in 10 threads, all the time required are the same. The average query time is slightly smaller. TS and TJ are slightly bigger.</td>
+  </tr>
+  <tr>
+    <td>Case 3: HTTP/10 threads/No prepared statements</td>
+    <td><img src="figure/scaled/log3.png" alt="Graph Results Screenshot Case 4" style="width:304px;height:228px;"></td>
+    <td>323</td>
+    <td>112.05</td>
+    <td>109.6</td>
+    <td>Compared to single-instance, all the time required are a lot smaller. Compared to the one using prepared statements in scaled version, the time required are all similar. All the time required are slightly smaller.</td>
+  </tr>
+  <tr>
+    <td>Case 4: HTTP/10 threads/No connection pooling</td>
+    <td><img src="figure/scaled/log4.png" alt="Graph Results Screenshot Case 4" style="width:304px;height:228px;"></td>
+    <td>329</td>
+    <td>116.97</td>
+    <td>114.47</td>
+    <td>Compared to single-instance, all the time required are a lot smaller. Compared to the one using connection pooling in scaled version, all of the time required are slightly larger.</td>
+  </tr>
+
+</table> 
+
+</body>
+</html>
