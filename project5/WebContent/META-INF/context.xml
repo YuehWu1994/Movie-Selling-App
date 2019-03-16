@@ -12,7 +12,7 @@
     <Resource name="jdbc/write_moviedb" auth="Container" type="javax.sql.DataSource"
               maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="mytestuser"
               password="mypassword" driverClassName="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://18.221.18.233:3306/moviedb?autoReconnect=true&amp;cachePrepStmts=true"/>
+              url="jdbc:mysql://52.14.243.189:3306/moviedb?autoReconnect=true&amp;cachePrepStmts=true"/>
     
     <!--
     <Resource name="jdbc/moviedb" auth="Container" type="javax.sql.DataSource"
@@ -24,6 +24,6 @@
     <Resource name="jdbc/write_moviedb" auth="Container" type="javax.sql.DataSource"
               maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="mytestuser"
               password="mypassword" driverClassName="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://18.221.18.233:3306"/>
+              url="jdbc:mysql://52.14.243.189:3306"/>
     -->  
 </Context>
