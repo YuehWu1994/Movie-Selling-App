@@ -2,7 +2,7 @@
 
 <Context>
 
-    <!-- Defines a Data Source Connecting to localhost moviedb-->              
+    <!-- Defines a Data Source Connecting to localhost moviedb-->               
     <Resource name="jdbc/moviedb" auth="Container" type="javax.sql.DataSource"
               maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="mytestuser"
               password="mypassword" driverClassName="com.mysql.jdbc.Driver"
@@ -13,5 +13,17 @@
               maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="mytestuser"
               password="mypassword" driverClassName="com.mysql.jdbc.Driver"
               url="jdbc:mysql://18.221.18.233:3306/moviedb?autoReconnect=true&amp;cachePrepStmts=true"/>
-          
+    
+    <!--
+    <Resource name="jdbc/moviedb" auth="Container" type="javax.sql.DataSource"
+              maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="mytestuser"
+              password="mypassword" driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306"/>
+              
+              
+    <Resource name="jdbc/write_moviedb" auth="Container" type="javax.sql.DataSource"
+              maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="mytestuser"
+              password="mypassword" driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://18.221.18.233:3306"/>
+    -->  
 </Context>
