@@ -1,4 +1,4 @@
-# cs122b-winter19-team-108
+# Projects-in-Databases-and-Web-Applications
 
 The script cal_avg_time in project5 is used to parse the log statements and taking the average of all the samples (TS and TJ) in log files. For more details, please see: project5/project5_report.pdf
 
